@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Manrope:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="headquarters.css" />
+  <link rel="stylesheet" href="live-order.css" />
 </head>
 <body>
   <div class="notice">세 가지 맛, 하나의 즐거움 — 자담&마루 통합 홈페이지에 오신 것을 환영합니다.</div>
@@ -76,6 +77,65 @@
         <div class="brand-art"><span class="food-emoji">🍗</span><span class="stamp">CRISPY<br>& HONEST</span><p>CHICKEN<br>DONE<br>RIGHT.</p></div>
       </article>
     </section>
+
+    <section class="order-live" id="order">
+      <div class="order-live-head">
+        <p class="section-kicker">ORDER & LIVE STORE</p>
+        <h2>주문은 쓰던 앱에서 바로,<br><strong>매장은 실시간으로 확인하세요.</strong></h2>
+        <p>브랜드를 선택하고 배달 앱 또는 가까운 매장으로 이동할 수 있습니다.</p>
+      </div>
+
+      <div class="quick-order">
+        <div class="quick-brands" role="radiogroup" aria-label="주문 브랜드 선택">
+          <button class="quick-brand active" data-order-brand="자담치킨" aria-pressed="true">🍗 <b>자담치킨</b></button>
+          <button class="quick-brand" data-order-brand="피자마루" aria-pressed="false">🍕 <b>피자마루</b></button>
+          <button class="quick-brand" data-order-brand="요거트퍼플" aria-pressed="false">🍨 <b>요거트퍼플</b></button>
+        </div>
+        <div class="quick-apps">
+          <button data-scheme="baemin://" data-fallback="https://www.baemin.com/"><i class="baemin">배민</i><b>배달의민족</b><span>앱 열기 →</span></button>
+          <button data-scheme="coupangeats://" data-fallback="https://www.coupangeats.com/"><i class="coupang">쿠팡</i><b>쿠팡이츠</b><span>앱 열기 →</span></button>
+          <button data-scheme="yogiyo://" data-fallback="https://www.yogiyo.co.kr/mobile/"><i class="yogiyo">요기요</i><b>요기요</b><span>앱 열기 →</span></button>
+          <a id="naver-order-link" href="https://map.naver.com/p/search/%EC%9E%90%EB%8B%B4%EC%B9%98%ED%82%A8" target="_blank" rel="noopener"><i class="naver">N</i><b>네이버 매장찾기</b><span>지도 열기 →</span></a>
+        </div>
+        <p class="quick-note">선택 브랜드: <strong id="quick-selected-brand">자담치킨</strong> · 앱이 열리면 브랜드명 또는 가까운 매장명을 검색해 주세요.</p>
+      </div>
+
+      <div class="live-store" id="live-store">
+        <div class="live-view">
+          <video id="store-live-video" controls muted playsinline poster="assets/hero-food.png"></video>
+          <div class="live-overlay" id="live-overlay">
+            <span class="live-pulse"></span>
+            <b>LIVE 연결 준비</b>
+            <p>매장 CCTV 중계 주소를 연결하면 이곳에서 실시간 화면을 볼 수 있습니다.</p>
+          </div>
+          <span class="live-badge">● LIVE STORE</span>
+        </div>
+        <div class="live-info">
+          <p class="section-kicker">OPEN KITCHEN</p>
+          <h3>안심하고 주문할 수 있는<br>우리 매장 실시간 화면</h3>
+          <ul>
+            <li><b>개인정보 보호</b><span>조리대 등 공개 허용 구역만 송출</span></li>
+            <li><b>안전한 중계</b><span>CCTV 비밀번호와 원본 RTSP 주소는 비공개</span></li>
+            <li><b>무료 기반</b><span>MediaMTX 또는 go2rtc로 HLS/WebRTC 변환 가능</span></li>
+          </ul>
+          <p class="privacy-copy">고객·직원 얼굴이 식별되는 구역은 촬영 동의와 안내 표지 없이 공개하면 안 됩니다. 영상은 녹화보다 실시간 확인 중심으로 운영하는 것을 권장합니다.</p>
+          <button class="live-help" type="button" id="live-help">CCTV 연결 방법 보기</button>
+        </div>
+      </div>
+    </section>
+
+    <dialog class="live-dialog" id="live-dialog">
+      <button class="dialog-close" aria-label="닫기">×</button>
+      <p class="section-kicker">LIVE CAMERA SETUP</p>
+      <h3>기존 CCTV를 홈페이지에 안전하게 연결하는 방법</h3>
+      <ol>
+        <li><b>매장 내부망</b>에서 CCTV의 RTSP 주소를 확인합니다.</li>
+        <li>무료 프로그램 <b>MediaMTX 또는 go2rtc</b>를 Docker로 실행합니다.</li>
+        <li>외부에는 비밀번호가 포함된 RTSP가 아닌 <b>HLS/WebRTC 주소</b>만 공개합니다.</li>
+        <li>Cloudflare Tunnel과 접근 정책을 적용한 뒤 이 페이지의 영상 주소에 연결합니다.</li>
+      </ol>
+      <p>실제 연결에는 CCTV 제조사·모델, 매장 인터넷 환경, 공개할 카메라 1대의 정보가 필요합니다.</p>
+    </dialog>
 
     <section class="promise">
       <div class="promise-title"><p class="section-kicker">OUR PROMISE</p><h2>맛에 대한<br><em>한결같은 원칙</em></h2></div>

@@ -17,3 +17,20 @@ const io=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecti
 io.observe(document.querySelector('.stats'));
 const topBtn=document.querySelector('.to-top'); window.addEventListener('scroll',()=>topBtn.classList.toggle('show',scrollY>500)); topBtn.onclick=()=>scrollTo({top:0,behavior:'smooth'});
 document.querySelector('.menu-btn').onclick=()=>{const nav=document.querySelector('.nav');nav.style.display=nav.style.display==='flex'?'none':'flex';nav.style.position='absolute';nav.style.top='72px';nav.style.left='0';nav.style.right='0';nav.style.padding='30px';nav.style.background='#f7f3eb';nav.style.flexDirection='column';nav.style.gap='22px'};
+
+let quickBrand='자담치킨';
+const quickBrandLabel=document.querySelector('#quick-selected-brand');
+const naverOrderLink=document.querySelector('#naver-order-link');
+document.querySelectorAll('.quick-brand').forEach(button=>button.addEventListener('click',()=>{
+  document.querySelectorAll('.quick-brand').forEach(item=>{item.classList.remove('active');item.setAttribute('aria-pressed','false')});
+  button.classList.add('active');button.setAttribute('aria-pressed','true');
+  quickBrand=button.dataset.orderBrand;quickBrandLabel.textContent=quickBrand;
+  naverOrderLink.href=`https://map.naver.com/p/search/${encodeURIComponent(quickBrand)}`;
+}));
+document.querySelectorAll('.quick-apps button').forEach(button=>button.addEventListener('click',()=>{
+  const started=Date.now();window.location.href=button.dataset.scheme;
+  setTimeout(()=>{if(!document.hidden&&Date.now()-started<1800)window.open(button.dataset.fallback,'_blank','noopener')},900);
+}));
+const liveDialog=document.querySelector('#live-dialog');
+document.querySelector('#live-help').addEventListener('click',()=>liveDialog.showModal());
+document.querySelector('.dialog-close').addEventListener('click',()=>liveDialog.close());
