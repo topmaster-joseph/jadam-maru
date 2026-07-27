@@ -1,0 +1,47 @@
+html[lang="ko"] body {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-break: strict;
+}
+
+h1, h2, h3,
+.hero-desc,
+.order-live-head > p,
+.privacy-copy,
+.notice {
+  text-wrap: balance;
+}
+
+p, li, dt, dd, a, button, span {
+  word-break: keep-all;
+}
+
+@media (max-width: 900px) {
+  .nav.mobile-open {
+    display: flex;
+    position: absolute;
+    top: 72px;
+    left: 0;
+    right: 0;
+    padding: 28px 6vw;
+    background: #f7f3eb;
+    border-bottom: 1px solid var(--line);
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: 0 14px 30px rgba(38, 31, 28, .08);
+  }
+}
+
+@media (max-width: 560px) {
+  h1 br, h2 br, h3 br, p br {
+    display: none;
+  }
+
+  .notice {
+    height: auto;
+    min-height: 34px;
+    padding: 8px 16px;
+    text-align: center;
+    line-height: 1.45;
+  }
+}
