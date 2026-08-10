@@ -1,0 +1,21 @@
+{
+  "productionBranch": "main",
+  "deployment": {
+    "provider": "cloudflare-pages",
+    "mode": "github-auto",
+    "manualDeployAllowed": false,
+    "previewPullRequests": true
+  },
+  "contentFiles": {
+    "store": "content/store.json",
+    "menus": "content/menus.json",
+    "notices": "content/notices.json",
+    "events": "content/events.json"
+  },
+  "qualityGates": [
+    "content validation",
+    "static build",
+    "mobile CTA check",
+    "privacy/terms generation"
+  ]
+}
