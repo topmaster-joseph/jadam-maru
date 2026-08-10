@@ -1,38 +1,33 @@
-# 자담&마루 통합 홈페이지
+# 자담&마루 AI 운영형 홈페이지
 
-자담치킨, 피자마루, 요거트퍼플을 하나의 브랜드 경험으로 연결한 반응형 프런트엔드 시안입니다.
+자담치킨, 피자마루, 요거트퍼플을 한 매장에서 안내하는 자담&마루 무안목포대점 사이트입니다.
 
-## 실행
+## 운영 원칙
+이 저장소가 사이트의 단일 원본(Source of Truth)입니다.
+사용자는 자연어로 변경을 요청하고, AI는 GitHub 원본을 수정합니다. `main` 반영 후 검증·빌드·Cloudflare Pages 배포가 자동으로 이어지도록 구성합니다.
 
-`index.html`을 브라우저에서 열면 바로 확인할 수 있습니다. 로컬 서버 사용 시 이 폴더에서 `python -m http.server 8000` 실행 후 `http://localhost:8000`으로 접속합니다.
+## 일상 수정 위치
+- 전화·주소·영업시간: `content/store.json`
+- 메뉴·가격: `content/menus.json`
+- 상단 공지: `content/notices.json`
+- 행사·프로모션: `content/events.json`
 
-## 구성
+## 자동 처리
+1. `node scripts/validate-content.mjs`
+2. `node scripts/build.mjs`
+3. `dist/` 정적 사이트 생성
+4. GitHub Actions가 Cloudflare Pages 프로젝트 `jadam-maru`로 자동 배포
 
-- 통합 브랜드 히어로
-- 3개 브랜드 전환형 소개
-- 브랜드 원칙 및 주요 수치
-- 새소식 카드
-- 창업 문의 CTA
-- 세 브랜드 공식 본사 정보 및 홈페이지 연결
-- 반응형 모바일 내비게이션
+## AI 작업 규칙
+- Codex/ChatGPT: `AGENTS.md`
+- Claude Code: `CLAUDE.md` + `AGENTS.md`
+- ZIP 수동배포 및 별도 임시 production 사이트 생성 금지
+- 확인되지 않은 가격은 추측하지 않고 `매장 확인`으로 유지
 
-## 확인 자료
+## Production
+- Branch: `main`
+- Cloudflare Pages project: `jadam-maru`
+- Public URL: `https://jadam-maru.pages.dev/`
 
-- 자담치킨 공식 홈페이지: ㈜웰빙푸드 본사·대표전화·창업상담 정보
-- 피자마루 공식 홈페이지: ㈜푸드죤 본사·주문번호·창업문의 정보
-- 요거트퍼플 공식 홈페이지: 에이앤디(AND) 본사·대표전화·제휴 이메일 정보
-- 연결된 Google Drive의 자담&마루 매장 운영 자료: 2018년 운영 시작, 목포대학교 인접 입지, 3개 브랜드 통합 운영, 가격과 맛을 함께 중시하는 방향성
-
-본사 정보 확인 기준일: 2026-07-22
-
-## Docker
-
-```bash
-docker compose up --build -d
-```
-
-브라우저에서 `http://localhost:8080`으로 접속합니다.
-
-## Cloudflare
-
-로컬 배포는 `npx wrangler deploy`를 사용합니다. GitHub Actions 자동 배포를 사용하려면 저장소 Secrets에 `CLOUDFLARE_API_TOKEN`과 `CLOUDFLARE_ACCOUNT_ID`를 등록합니다.
+## 복구
+기존 main은 `backup/main-before-ai-ops-20260810` 브랜치에 보존합니다.
