@@ -1,0 +1,12 @@
+{
+  "active": [
+    {
+      "id": "welcome",
+      "enabled": true,
+      "priority": 10,
+      "text": "목포대 앞 치킨·피자·요거트 통합 매장 · 전화 주문 061-453-8295",
+      "startsAt": "2026-08-10",
+      "endsAt": null
+    }
+  ]
+}
