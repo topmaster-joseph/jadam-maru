@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "validate": "node scripts/validate-content.mjs",
-    "build": "npm run validate && node scripts/build.mjs"
+    "validate": "node scripts/validate-content.mjs && node --check scripts/build-marketing-ai.mjs",
+    "build": "npm run validate && node scripts/build.mjs && node scripts/build-marketing-ai.mjs"
   }
 }
