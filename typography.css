@@ -1,7 +1,20 @@
+/* EKODI Responsive Typography Standard v1 · JADAM&MARU */
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 html[lang="ko"] body {
   word-break: keep-all;
   overflow-wrap: break-word;
   line-break: strict;
+}
+
+h1, h2, h3, h4, h5, h6,
+p, li, dt, dd, a, button, label, strong, small, span {
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 h1, h2, h3,
@@ -12,8 +25,48 @@ h1, h2, h3,
   text-wrap: balance;
 }
 
-p, li, dt, dd, a, button, span {
-  word-break: keep-all;
+p, li, dt, dd, .privacy-copy {
+  text-wrap: pretty;
+}
+
+code, kbd, samp,
+.url, .domain, .email {
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+pre {
+  max-width: 100%;
+  overflow-x: auto;
+  word-break: normal;
+}
+
+main, section, article, aside, header, footer, nav, div, li, td, th {
+  min-width: 0;
+}
+
+img, video, canvas, iframe {
+  max-width: 100%;
+  height: auto;
+}
+
+svg {
+  max-width: 100%;
+}
+
+button,
+[role="button"] {
+  white-space: normal;
+}
+
+.ekodi-nowrap {
+  white-space: nowrap !important;
+  word-break: normal !important;
+}
+
+.ekodi-break-anywhere {
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
 }
 
 @media (max-width: 900px) {
@@ -29,6 +82,14 @@ p, li, dt, dd, a, button, span {
     flex-direction: column;
     gap: 20px;
     box-shadow: 0 14px 30px rgba(38, 31, 28, .08);
+  }
+}
+
+@media (max-width: 768px) {
+  input, select, textarea, button,
+  h1, h2, h3, h4, h5, h6,
+  p, li, dt, dd, blockquote {
+    max-width: 100%;
   }
 }
 
