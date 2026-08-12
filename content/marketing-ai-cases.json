@@ -4,7 +4,7 @@
   "publicLinksEnabled": false,
   "cases": [
     {
-      "slug": "jadam-mokpo-univ",
+      "slug": "jadam",
       "storeName": "자담치킨 목포대점",
       "brandId": "chicken",
       "categoryLabel": "치킨",
@@ -13,7 +13,7 @@
       "coreStoreSlug": "jadam-mokpo-univ"
     },
     {
-      "slug": "pizzamaru-mokpo-univ",
+      "slug": "pizzamaru",
       "storeName": "피자마루 목포대점",
       "brandId": "pizza",
       "categoryLabel": "피자",
@@ -22,7 +22,7 @@
       "coreStoreSlug": "pizzamaru-mokpo-univ"
     },
     {
-      "slug": "yogurtpurple-mokpo-univ",
+      "slug": "yogurtpurple",
       "storeName": "요거트퍼플 목포대점",
       "brandId": "yogurt",
       "categoryLabel": "디저트",
