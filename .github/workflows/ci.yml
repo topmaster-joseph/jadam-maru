@@ -1,0 +1,40 @@
+name: Marketing AI CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Validate and build Marketing AI
+        run: npm run build
+      - name: Verify customer authentication is generated per tenant
+        shell: bash
+        run: |
+          set -euo pipefail
+          for spec in \
+            'jadam:const TENANT="jadam"' \
+            'pizzamaru:const TENANT="pizzamaru"' \
+            'yogurtpurple:const TENANT="yogurt"'; do
+            dir="${spec%%:*}"
+            needle="${spec#*:}"
+            file="dist/marketing-ai/$dir/index.html"
+            test -f "$file"
+            grep -Fq 'id="customerAuthOpen"' "$file"
+            grep -Fq '/api/customer/login' "$file"
+            grep -Fq '/api/customer/accept-invite' "$file"
+            grep -Fq "$needle" "$file"
+            grep -Fq 'Content-Security-Policy' "$file"
+          done
+          grep -Fq 'https://yogurt.ekodi.kr/' dist/marketing-ai/qa/index.html
