@@ -1,0 +1,34 @@
+{
+  "productName": "마케팅AI",
+  "poweredBy": "EKODIBIZ",
+  "publicLinksEnabled": false,
+  "cases": [
+    {
+      "slug": "jadam-mokpo-univ",
+      "storeName": "자담치킨 목포대점",
+      "brandId": "chicken",
+      "categoryLabel": "치킨",
+      "headline": "오늘의 매장 마케팅을 한 화면에서",
+      "status": "qa_pending",
+      "coreStoreSlug": "jadam-mokpo-univ"
+    },
+    {
+      "slug": "pizzamaru-mokpo-univ",
+      "storeName": "피자마루 목포대점",
+      "brandId": "pizza",
+      "categoryLabel": "피자",
+      "headline": "메뉴와 채널을 연결하는 매장 마케팅",
+      "status": "qa_pending",
+      "coreStoreSlug": "pizzamaru-mokpo-univ"
+    },
+    {
+      "slug": "yogurtpurple-mokpo-univ",
+      "storeName": "요거트퍼플 목포대점",
+      "brandId": "yogurt",
+      "categoryLabel": "디저트",
+      "headline": "매장 소식을 고객 콘텐츠로 바꾸는 마케팅",
+      "status": "qa_pending",
+      "coreStoreSlug": "yogurtpurple-mokpo-univ"
+    }
+  ]
+}
