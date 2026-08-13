@@ -48,8 +48,8 @@ jobs:
           grep -Fq 'Pro 사용신청' "$hub"
           grep -Fq 'Google로 무료 시작' "$hub"
           grep -Fq 'verifyOtp({token_hash:tokenHash' "$hub"
-          grep -Fq 'https://yogurtpurple.ekodi.kr/' dist/marketing-ai/qa/index.html
-          if grep -R -Fq 'https://yogurt.ekodi.kr/' dist/marketing-ai; then
-            echo 'Legacy yogurt domain detected'
+          grep -Fq 'https://yogurt.ekodi.kr/' dist/marketing-ai/qa/index.html
+          if grep -R -Fq 'https://yogurtpurple.ekodi.kr/' dist/marketing-ai; then
+            echo 'Legacy yogurtpurple domain detected'
             exit 1
           fi
