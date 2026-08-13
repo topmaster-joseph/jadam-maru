@@ -10,7 +10,7 @@ const allowedReturnOrigins = [
   'https://marketing.ekodi.kr',
   'https://jadam.ekodi.kr',
   'https://pizzamaru.ekodi.kr',
-  'https://yogurtpurple.ekodi.kr',
+  'https://yogurt.ekodi.kr',
 ];
 
 function htmlFiles(dir) {
@@ -48,7 +48,7 @@ for (const file of htmlFiles(out)) {
   // Legacy tenant/password auth is removed. Google identity is the single membership entry point.
   html = html.replace(/<section class="auth-panel"[\s\S]*?<\/section>/g, '');
   html = html.replace(/<script>\(\(\)=>\{const API='https:\/\/api\.ekodi\.kr';const TENANT=[\s\S]*?<\/script>/g, '');
-  html = html.replaceAll('https://yogurt.ekodi.kr/', 'https://yogurtpurple.ekodi.kr/');
+  html = html.replaceAll('https://yogurtpurple.ekodi.kr/', 'https://yogurt.ekodi.kr/');
   html = html.replace(
     "script-src 'unsafe-inline'; connect-src https://api.ekodi.kr;",
     `script-src 'unsafe-inline' https://cdn.jsdelivr.net; connect-src https://api.ekodi.kr ${supabaseUrl};`,
@@ -89,7 +89,7 @@ for (const file of htmlFiles(out)) {
   if (html.includes('/api/customer/login') || html.includes('/api/customer/accept-invite') || html.includes('id="customerAuthOpen"')) {
     throw new Error(`Legacy direct customer auth survived in ${path.relative(root, file)}`);
   }
-  if (html.includes('https://yogurt.ekodi.kr/')) throw new Error(`Legacy yogurt domain survived in ${path.relative(root, file)}`);
+  if (html.includes('https://yogurtpurple.ekodi.kr/')) throw new Error(`Legacy yogurt domain survived in ${path.relative(root, file)}`);
   if (html.includes('id="googleCustomerAuth"')) {
     if (!html.includes('verifyOtp({token_hash:tokenHash')) throw new Error(`Central handoff receiver missing in ${path.relative(root, file)}`);
     if (!html.includes('cdn.jsdelivr.net/npm/@supabase/supabase-js')) throw new Error(`Supabase auth client missing in ${path.relative(root, file)}`);
