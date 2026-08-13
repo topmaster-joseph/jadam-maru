@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "validate": "node scripts/validate-content.mjs && node scripts/validate-marketing-pricing.mjs && node --check scripts/build-marketing-ai.mjs && node --check scripts/patch-google-first-auth.mjs && node --check scripts/patch-client-prereg.mjs && node --check scripts/patch-marketing-pricing.mjs && node --check scripts/patch-marketing-visual-v2.mjs",
-    "build": "npm run validate && node scripts/build.mjs && node scripts/build-marketing-ai.mjs && node scripts/patch-google-first-auth.mjs && node scripts/patch-client-prereg.mjs && node scripts/patch-marketing-pricing.mjs && node scripts/patch-marketing-visual-v2.mjs"
+    "validate": "node scripts/validate-content.mjs && node scripts/validate-marketing-pricing.mjs && node --check scripts/build-marketing-ai.mjs && node --check scripts/patch-google-first-auth.mjs && node --check scripts/patch-client-prereg.mjs && node --check scripts/patch-marketing-pricing.mjs && node --check scripts/patch-marketing-visual-v2.mjs && node --check scripts/patch-marketing-ci-compat.mjs",
+    "build": "npm run validate && node scripts/build.mjs && node scripts/build-marketing-ai.mjs && node scripts/patch-google-first-auth.mjs && node scripts/patch-client-prereg.mjs && node scripts/patch-marketing-pricing.mjs && node scripts/patch-marketing-visual-v2.mjs && node scripts/patch-marketing-ci-compat.mjs"
   }
 }
