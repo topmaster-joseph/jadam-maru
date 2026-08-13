@@ -26,6 +26,11 @@ for (const file of htmlFiles(out)) {
   let html = fs.readFileSync(file, 'utf8');
   const original = html;
 
+  // Remove the legacy per-tenant password modal and its runtime. Central identity is the only visible auth entry.
+  html = html.replace(/<section class="auth-panel"[\s\S]*?<\/section>/g, '');
+  html = html.replace(/<script>\(\(\)=>\{const API='https:\/\/api\.ekodi\.kr';const TENANT=[\s\S]*?<\/script>/g, '');
+  html = html.replaceAll('https://yogurt.ekodi.kr/', 'https://yogurtpurple.ekodi.kr/');
+
   if (html.includes('id="customerAuthOpen"')) {
     html = html.replace(
       '<button class="auth-open" id="customerAuthOpen" type="button">고객 로그인</button>',
@@ -50,5 +55,13 @@ for (const file of htmlFiles(out)) {
 
 if (casePages < 3) throw new Error(`Expected at least 3 Marketing AI case pages for central auth, patched ${casePages}`);
 if (!indexPatched) throw new Error('Marketing AI index central login entry was not patched');
+
+for (const file of htmlFiles(out)) {
+  const html = fs.readFileSync(file, 'utf8');
+  if (html.includes('/api/customer/login') || html.includes('/api/customer/accept-invite') || html.includes('id="customerAuthOpen"')) {
+    throw new Error(`Legacy direct customer auth survived in ${path.relative(root, file)}`);
+  }
+  if (html.includes('https://yogurt.ekodi.kr/')) throw new Error(`Legacy yogurt domain survived in ${path.relative(root, file)}`);
+}
 
 console.log(`Central Marketing AI auth patched: index + ${casePages} case pages`);
