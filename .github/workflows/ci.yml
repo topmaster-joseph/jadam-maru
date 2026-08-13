@@ -19,7 +19,7 @@ jobs:
           node-version: '24'
       - name: Validate and build Marketing AI
         run: npm run build
-      - name: Verify EKODI free-to-Pro central authentication
+      - name: Verify EKODI free trial and central authentication
         shell: bash
         run: |
           set -euo pipefail
@@ -39,11 +39,15 @@ jobs:
               exit 1
             fi
           done
-          grep -Fq 'id="googleCustomerAuth"' dist/marketing-ai/index.html
-          grep -Fq 'FREE → PRO' dist/marketing-ai/index.html
-          grep -Fq 'Pro 사용신청' dist/marketing-ai/index.html
-          grep -Fq 'Google로 무료 시작' dist/marketing-ai/index.html
-          grep -Fq 'verifyOtp({token_hash:tokenHash' dist/marketing-ai/index.html
+          hub='dist/marketing-ai/index.html'
+          grep -Fq 'id="googleCustomerAuth"' "$hub"
+          grep -Fq 'id="freeTrialForm"' "$hub"
+          grep -Fq '30초 마케팅 문구 무료체험' "$hub"
+          grep -Fq 'Marketing AI basic trial engine' "$hub"
+          grep -Fq 'FREE → PRO' "$hub"
+          grep -Fq 'Pro 사용신청' "$hub"
+          grep -Fq 'Google로 무료 시작' "$hub"
+          grep -Fq 'verifyOtp({token_hash:tokenHash' "$hub"
           grep -Fq 'https://yogurtpurple.ekodi.kr/' dist/marketing-ai/qa/index.html
           if grep -R -Fq 'https://yogurt.ekodi.kr/' dist/marketing-ai; then
             echo 'Legacy yogurt domain detected'
