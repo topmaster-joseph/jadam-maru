@@ -1,0 +1,190 @@
+{
+  "version": "2026-08-beta-1",
+  "status": "beta_preview",
+  "currency": "KRW",
+  "philosophy": "필요한 만큼 자유롭게. 많이 사용할수록 더 저렴하게. 맡길수록 더 편리하게.",
+  "customerPromise": [
+    "구독하지 않아도 필요한 기능을 1회 또는 종량제로 이용할 수 있습니다.",
+    "상위 플랜일수록 같은 기능의 단가가 낮아지고 자동화 범위가 넓어집니다.",
+    "시스템은 실제 사용량을 기준으로 가장 경제적인 플랜을 추천하며 자동으로 상향하지 않습니다.",
+    "플랜을 낮추거나 구독을 중단해도 계정과 매장 자산의 보존을 우선합니다. 자동 실행만 중지하는 구조를 기본으로 합니다."
+  ],
+  "billingModes": [
+    {
+      "id": "one_time",
+      "label": "1회 결제",
+      "headline": "오늘 필요한 일만",
+      "description": "콘텐츠·이미지·쇼츠·게시 같은 작업을 한 번씩 선택해 결제합니다."
+    },
+    {
+      "id": "metered",
+      "label": "종량제",
+      "headline": "쓴 만큼만",
+      "description": "월 기본료 없이 실제 사용한 기능과 실행 건수만 계산합니다."
+    },
+    {
+      "id": "automation",
+      "label": "자동화 플랜",
+      "headline": "많이 맡길수록 효율적으로",
+      "description": "반복 운영이 필요한 점포는 낮은 단가와 예약·반복·상시 자동화를 함께 사용합니다."
+    }
+  ],
+  "actions": [
+    {
+      "id": "social_caption",
+      "label": "SNS 게시물 생성",
+      "unit": "건",
+      "basePrice": 500,
+      "defaultQty": 12,
+      "maxQty": 300,
+      "availability": "preview"
+    },
+    {
+      "id": "image",
+      "label": "홍보 이미지 생성",
+      "unit": "장",
+      "basePrice": 1200,
+      "defaultQty": 4,
+      "maxQty": 150,
+      "availability": "preview"
+    },
+    {
+      "id": "shorts_plan",
+      "label": "쇼츠 기획·대본",
+      "unit": "건",
+      "basePrice": 1500,
+      "defaultQty": 4,
+      "maxQty": 100,
+      "availability": "preview"
+    },
+    {
+      "id": "video",
+      "label": "숏폼 영상 제작",
+      "unit": "편",
+      "basePrice": 3500,
+      "defaultQty": 2,
+      "maxQty": 80,
+      "availability": "planned"
+    },
+    {
+      "id": "publish",
+      "label": "소셜 1회 게시",
+      "unit": "회",
+      "basePrice": 300,
+      "defaultQty": 12,
+      "maxQty": 500,
+      "availability": "planned"
+    },
+    {
+      "id": "scheduled_publish",
+      "label": "예약 게시",
+      "unit": "회",
+      "basePrice": 500,
+      "defaultQty": 4,
+      "maxQty": 300,
+      "availability": "planned"
+    },
+    {
+      "id": "analysis",
+      "label": "성과 분석",
+      "unit": "회",
+      "basePrice": 2000,
+      "defaultQty": 1,
+      "maxQty": 31,
+      "availability": "planned"
+    },
+    {
+      "id": "review_reply",
+      "label": "리뷰 답변 지원",
+      "unit": "건",
+      "basePrice": 300,
+      "defaultQty": 10,
+      "maxQty": 500,
+      "availability": "planned"
+    }
+  ],
+  "plans": [
+    {
+      "id": "free",
+      "label": "FREE",
+      "monthlyFee": 0,
+      "metered": false,
+      "unitMultiplier": null,
+      "includedCredit": 0,
+      "automationDepth": 0,
+      "summary": "먼저 체험하고 판단",
+      "benefits": ["로그인 없는 기본 체험", "Google 무료회원 진입", "유료 플랜 강제 없음"]
+    },
+    {
+      "id": "flex",
+      "label": "FLEX",
+      "monthlyFee": 0,
+      "metered": true,
+      "unitMultiplier": 1,
+      "includedCredit": 0,
+      "automationDepth": 1,
+      "summary": "가끔 필요할 때 쓰는 만큼",
+      "benefits": ["월 기본료 0원", "1회·기능별 종량 결제", "대부분의 유료 기능 개별 선택"]
+    },
+    {
+      "id": "plus",
+      "label": "PLUS",
+      "monthlyFee": 9900,
+      "metered": true,
+      "unitMultiplier": 0.78,
+      "includedCredit": 5000,
+      "automationDepth": 2,
+      "summary": "매주 꾸준히 운영하는 점포",
+      "benefits": ["기본 단가 대비 22% 절감", "월 5,000원 상당 기본사용량", "예약·반복 운영 기능 우대"]
+    },
+    {
+      "id": "pro",
+      "label": "PRO",
+      "monthlyFee": 39900,
+      "metered": true,
+      "unitMultiplier": 0.58,
+      "includedCredit": 20000,
+      "automationDepth": 3,
+      "summary": "다채널 마케팅을 자주 운영",
+      "benefits": ["기본 단가 대비 42% 절감", "월 20,000원 상당 기본사용량", "다채널·성과 기반 자동화 확대"]
+    },
+    {
+      "id": "auto",
+      "label": "AUTO",
+      "monthlyFee": 69900,
+      "metered": true,
+      "unitMultiplier": 0.42,
+      "includedCredit": 40000,
+      "automationDepth": 4,
+      "summary": "마케팅 운영을 상시 맡기고 싶은 점포",
+      "benefits": ["기본 단가 대비 58% 절감", "월 40,000원 상당 기본사용량", "기획→생성→예약→분석 자동화 우선"]
+    }
+  ],
+  "automationModes": [
+    {
+      "id": "once",
+      "label": "이번 한 번만",
+      "description": "점주가 선택한 콘텐츠를 1회 생성·게시"
+    },
+    {
+      "id": "scheduled",
+      "label": "예약 실행",
+      "description": "지정한 날짜와 시간에 한 번 실행"
+    },
+    {
+      "id": "recurring",
+      "label": "기간 반복",
+      "description": "매주·매월 등 정한 기간 동안 반복"
+    },
+    {
+      "id": "always_on",
+      "label": "상시 자동화",
+      "description": "예산·승인 규칙 안에서 기획부터 성과 분석까지 연결"
+    }
+  ],
+  "payment": {
+    "hub": "https://pay.ekodi.kr/",
+    "liveCheckout": false,
+    "notice": "현재는 요금 구조 베타 미리보기입니다. 실제 결제는 최종 요금과 결제 흐름 검수 후 활성화하며, 결제 전에 금액과 조건을 다시 확인합니다."
+  }
+}

@@ -19,7 +19,7 @@ jobs:
           node-version: '24'
       - name: Validate and build Marketing AI
         run: npm run build
-      - name: Verify EKODI free trial and central authentication
+      - name: Verify EKODI free trial, flexible pricing and central authentication
         shell: bash
         run: |
           set -euo pipefail
@@ -39,15 +39,36 @@ jobs:
               exit 1
             fi
           done
+
           hub='dist/marketing-ai/index.html'
           grep -Fq 'id="googleCustomerAuth"' "$hub"
           grep -Fq 'id="freeTrialForm"' "$hub"
           grep -Fq '30초 마케팅 문구 무료체험' "$hub"
           grep -Fq 'Marketing AI basic trial engine' "$hub"
-          grep -Fq 'FREE → PRO' "$hub"
-          grep -Fq 'Pro 사용신청' "$hub"
           grep -Fq 'Google로 무료 시작' "$hub"
           grep -Fq 'verifyOtp({token_hash:tokenHash' "$hub"
+
+          # Public hub is product/trial-first, not a store-case directory.
+          grep -Fq '내 매장 마케팅,<br>필요한 만큼 자유롭게.' "$hub"
+          grep -Fq 'id="pricing"' "$hub"
+          grep -Fq 'id="usageEstimator"' "$hub"
+          grep -Fq 'BEST PLAN AI' "$hub"
+          grep -Fq '1회 결제' "$hub"
+          grep -Fq '종량제' "$hub"
+          grep -Fq '자동화 플랜' "$hub"
+          grep -Fq '현재 사용량에는 FLEX가 가장 경제적입니다.' "$hub"
+          for plan in free flex plus pro auto; do
+            grep -Fq "data-plan=\"$plan\"" "$hub"
+          done
+          if grep -Fq 'APPLICATION CASES' "$hub" || grep -Fq 'class="case-list"' "$hub"; then
+            echo 'Public application-case directory leaked back into the Marketing AI hub'
+            exit 1
+          fi
+          if grep -Fq 'href="https://pay.ekodi.kr' "$hub"; then
+            echo 'Live payment CTA must not be enabled while beta pricing is unapproved'
+            exit 1
+          fi
+
           grep -Fq 'https://yogurt.ekodi.kr/' dist/marketing-ai/qa/index.html
           if grep -R -Fq 'https://yogurtpurple.ekodi.kr/' dist/marketing-ai; then
             echo 'Legacy yogurtpurple domain detected'
