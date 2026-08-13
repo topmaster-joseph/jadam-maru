@@ -19,7 +19,7 @@ jobs:
           node-version: '24'
       - name: Validate and build Marketing AI
         run: npm run build
-      - name: Verify EKODI central authentication per tenant
+      - name: Verify EKODI free-to-Pro central authentication
         shell: bash
         run: |
           set -euo pipefail
@@ -28,7 +28,7 @@ jobs:
             test -f "$file"
             grep -Fq 'id="googleCustomerAuth"' "$file"
             grep -Fq 'https://auth.ekodi.kr/?site=marketing' "$file"
-            grep -Fq '통합 로그인' "$file"
+            grep -Fq 'Google로 무료 시작' "$file"
             grep -Fq 'Content-Security-Policy' "$file"
             grep -Fq "hash.get('ekodi_token')" "$file"
             grep -Fq 'verifyOtp({token_hash:tokenHash' "$file"
@@ -40,6 +40,9 @@ jobs:
             fi
           done
           grep -Fq 'id="googleCustomerAuth"' dist/marketing-ai/index.html
+          grep -Fq 'FREE → PRO' dist/marketing-ai/index.html
+          grep -Fq 'Pro 사용신청' dist/marketing-ai/index.html
+          grep -Fq 'Google로 무료 시작' dist/marketing-ai/index.html
           grep -Fq 'verifyOtp({token_hash:tokenHash' dist/marketing-ai/index.html
           grep -Fq 'https://yogurtpurple.ekodi.kr/' dist/marketing-ai/qa/index.html
           if grep -R -Fq 'https://yogurt.ekodi.kr/' dist/marketing-ai; then
