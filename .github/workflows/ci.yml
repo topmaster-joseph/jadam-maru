@@ -19,22 +19,24 @@ jobs:
           node-version: '24'
       - name: Validate and build Marketing AI
         run: npm run build
-      - name: Verify customer authentication is generated per tenant
+      - name: Verify EKODI central authentication per tenant
         shell: bash
         run: |
           set -euo pipefail
-          for spec in \
-            'jadam:const TENANT="jadam"' \
-            'pizzamaru:const TENANT="pizzamaru"' \
-            'yogurtpurple:const TENANT="yogurt"'; do
-            dir="${spec%%:*}"
-            needle="${spec#*:}"
+          for dir in jadam pizzamaru yogurtpurple; do
             file="dist/marketing-ai/$dir/index.html"
             test -f "$file"
-            grep -Fq 'id="customerAuthOpen"' "$file"
-            grep -Fq '/api/customer/login' "$file"
-            grep -Fq '/api/customer/accept-invite' "$file"
-            grep -Fq "$needle" "$file"
+            grep -Fq 'id="googleCustomerAuth"' "$file"
+            grep -Fq 'https://auth.ekodi.kr/?site=marketing' "$file"
+            grep -Fq '통합 로그인' "$file"
             grep -Fq 'Content-Security-Policy' "$file"
+            if grep -Fq '/api/customer/login' "$file" || grep -Fq '/api/customer/accept-invite' "$file" || grep -Fq 'id="customerAuthOpen"' "$file"; then
+              echo "Legacy direct customer auth detected in $file"
+              exit 1
+            fi
           done
-          grep -Fq 'https://yogurt.ekodi.kr/' dist/marketing-ai/qa/index.html
+          grep -Fq 'https://yogurtpurple.ekodi.kr/' dist/marketing-ai/qa/index.html
+          if grep -R -Fq 'https://yogurt.ekodi.kr/' dist/marketing-ai; then
+            echo 'Legacy yogurt domain detected'
+            exit 1
+          fi
