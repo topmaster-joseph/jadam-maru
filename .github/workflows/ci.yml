@@ -34,6 +34,9 @@ jobs:
             grep -Fq 'verifyOtp({token_hash:tokenHash' "$file"
             grep -Fq 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js' "$file"
             grep -Fq 'https://renzehysxirjilvdxacv.supabase.co' "$file"
+            grep -Fq '/api/customer/federated-login' "$file"
+            grep -Fq 'CUSTOMER_SESSION_WAIT_MS=12000' "$file"
+            grep -Fq 'ekodi-customer-token' "$file"
             if grep -Fq '/api/customer/login' "$file" || grep -Fq '/api/customer/accept-invite' "$file" || grep -Fq 'id="customerAuthOpen"' "$file"; then
               echo "Legacy direct customer auth detected in $file"
               exit 1
