@@ -10,6 +10,13 @@ if (config.status !== 'beta_preview') fail('status must remain beta_preview unti
 if (config.currency !== 'KRW') fail('currency must be KRW');
 if (!String(config.philosophy || '').includes('필요한 만큼')) fail('customer-choice philosophy is missing');
 
+const freeLimits=config.freeLimits||{};
+for(const key of ['caption','post','shorts']){
+  if(!Number.isInteger(freeLimits[key])||freeLimits[key]<=0)fail(`freeLimits.${key} must be a positive integer`);
+}
+if(freeLimits.period!=='month')fail('free limits must reset monthly');
+if(!Array.isArray(config.channelCatalog)||config.channelCatalog.length<6)fail('channelCatalog must expose representative marketing channels');
+
 const modeIds = (config.billingModes || []).map(item => item.id);
 for (const required of ['one_time', 'metered', 'automation']) {
   if (!modeIds.includes(required)) fail(`billing mode ${required} is required`);
@@ -36,12 +43,25 @@ if (plans.map(plan => plan.id).join(',') !== requiredPlans.join(',')) {
 let lastMonthlyFee = -1;
 let lastMultiplier = Infinity;
 let lastAutomationDepth = -1;
+let lastChannels=-1;
 for (const plan of plans) {
   if (!Number.isInteger(plan.monthlyFee) || plan.monthlyFee < 0) fail(`${plan.id} monthlyFee must be a non-negative integer`);
   if (plan.monthlyFee < lastMonthlyFee) fail(`${plan.id} monthlyFee must not decrease by tier`);
   if (!Number.isInteger(plan.includedCredit) || plan.includedCredit < 0) fail(`${plan.id} includedCredit must be a non-negative integer`);
   if (!Number.isInteger(plan.automationDepth) || plan.automationDepth < lastAutomationDepth) fail(`${plan.id} automationDepth must not decrease by tier`);
   if (!Array.isArray(plan.benefits) || plan.benefits.length < 2) fail(`${plan.id} needs concise customer benefits`);
+
+  const e=plan.entitlements||{};
+  if(!Number.isInteger(e.connectedChannels)||e.connectedChannels<0)fail(`${plan.id} connectedChannels must be a non-negative integer`);
+  if(e.connectedChannels<lastChannels)fail(`${plan.id} connectedChannels must not decrease by tier`);
+  for(const key of ['directPublish','scheduledPublish','recurringAutomation','alwaysOnAutomation','performanceAnalysis']){
+    if(typeof e[key]!=='boolean')fail(`${plan.id} entitlements.${key} must be boolean`);
+  }
+  if(plan.id==='free'&&(e.connectedChannels!==0||e.directPublish||e.scheduledPublish||e.recurringAutomation||e.alwaysOnAutomation))fail('FREE channels and automation must remain locked');
+  if(plan.automationDepth>=1&&!e.directPublish)fail(`${plan.id} must allow direct publish at automation depth 1+`);
+  if(plan.automationDepth>=2&&!e.scheduledPublish)fail(`${plan.id} must allow scheduled publish at automation depth 2+`);
+  if(plan.automationDepth>=3&&!e.recurringAutomation)fail(`${plan.id} must allow recurring automation at depth 3+`);
+  if(plan.automationDepth>=4&&!e.alwaysOnAutomation)fail(`${plan.id} must allow always-on automation at depth 4`);
 
   if (plan.id === 'free') {
     if (plan.metered !== false || plan.unitMultiplier !== null) fail('FREE must remain non-metered');
@@ -53,6 +73,7 @@ for (const plan of plans) {
   }
   lastMonthlyFee = plan.monthlyFee;
   lastAutomationDepth = plan.automationDepth;
+  lastChannels=e.connectedChannels;
 }
 
 const flex = plans.find(plan => plan.id === 'flex');
@@ -60,4 +81,4 @@ if (flex.monthlyFee !== 0 || flex.unitMultiplier !== 1) fail('FLEX must remain z
 if (config.payment?.liveCheckout !== false) fail('liveCheckout must remain false until payment QA and final pricing approval');
 if (!String(config.payment?.hub || '').startsWith('https://pay.ekodi.kr/')) fail('payment hub must stay under pay.ekodi.kr');
 
-console.log(`✅ Marketing AI pricing contract ${config.version} validated`);
+console.log(`✅ Marketing AI pricing contract ${config.version} validated with free quotas and tiered channel automation`);
