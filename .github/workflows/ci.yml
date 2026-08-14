@@ -34,6 +34,11 @@ jobs:
             grep -Fq 'verifyOtp({token_hash:tokenHash' "$file"
             grep -Fq 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js' "$file"
             grep -Fq 'https://renzehysxirjilvdxacv.supabase.co' "$file"
+            grep -Fq 'https://marketing-api.ekodi.kr' "$file"
+            grep -Fq '/api/marketing/domains' "$file"
+            grep -Fq 'id="customDomainPanel"' "$file"
+            grep -Fq 'id="customDomainForm"' "$file"
+            grep -Fq '고객이 소유한 서브도메인' "$file"
             grep -Fq '/api/customer/federated-login' "$file"
             grep -Fq 'CUSTOMER_SESSION_WAIT_MS=12000' "$file"
             grep -Fq 'ekodi-customer-token' "$file"
@@ -43,6 +48,11 @@ jobs:
             fi
           done
 
+          # Canonical *.ai.ekodi.kr workspaces return to themselves after central Google auth.
+          grep -Fq 'https://jadam.ai.ekodi.kr' scripts/patch-google-first-auth.mjs
+          grep -Fq 'https://pizzamaru.ai.ekodi.kr' scripts/patch-google-first-auth.mjs
+          grep -Fq 'https://yogurt.ai.ekodi.kr' scripts/patch-google-first-auth.mjs
+
           hub='dist/marketing-ai/index.html'
           grep -Fq 'id="googleCustomerAuth"' "$hub"
           grep -Fq 'id="freeTrialForm"' "$hub"
@@ -50,6 +60,9 @@ jobs:
           grep -Fq 'Marketing AI basic trial engine' "$hub"
           grep -Fq 'Google로 무료 시작' "$hub"
           grep -Fq 'verifyOtp({token_hash:tokenHash' "$hub"
+          grep -Fq 'id="customDomainPanel"' "$hub"
+          grep -Fq 'https://marketing-api.ekodi.kr' "$hub"
+          grep -Fq '/api/marketing/domains' "$hub"
 
           # Public hub is audience-neutral and login-first.
           grep -Fq '나와 우리를 위한 마케팅,<br>필요한 만큼 자유롭게.' "$hub"
