@@ -38,7 +38,8 @@ jobs:
             grep -Fq '/api/marketing/domains' "$file"
             grep -Fq 'id="customDomainPanel"' "$file"
             grep -Fq 'id="customDomainForm"' "$file"
-            grep -Fq '고객이 소유한 서브도메인' "$file"
+            grep -Fq '고객이 이미 소유한 서브도메인' "$file"
+            grep -Fq 'if(!data.eligible){panel.hidden=true' "$file"
             grep -Fq '/api/customer/federated-login' "$file"
             grep -Fq 'CUSTOMER_SESSION_WAIT_MS=12000' "$file"
             grep -Fq 'ekodi-customer-token' "$file"
@@ -64,7 +65,8 @@ jobs:
           grep -Fq 'https://marketing-api.ekodi.kr' "$hub"
           grep -Fq '/api/marketing/domains' "$hub"
 
-          # Public hub is audience-neutral and login-first.
+          # Public hub is audience-neutral, indexable and Google-first.
+          grep -Fq '<meta name="robots" content="index,follow">' "$hub"
           grep -Fq '나와 우리를 위한 마케팅,<br>필요한 만큼 자유롭게.' "$hub"
           grep -Fq 'id="trialType"' "$hub"
           grep -Fq 'id="trialSubject"' "$hub"
@@ -73,16 +75,24 @@ jobs:
           grep -Fq '기관·공공기관' "$hub"
           grep -Fq '비영리·종교단체' "$hub"
           grep -Fq '모임·협회·커뮤니티' "$hub"
+          grep -Fq 'FREE START · 먼저 체험' "$hub"
+          if grep -Fq '로그인 없이 30초 체험' "$hub" || grep -Fq '로그인 없이 바로 체험' "$hub"; then
+            echo 'Anonymous-trial copy leaked back into Google-first landing'
+            exit 1
+          fi
           if grep -Fq 'id="trialStore"' "$hub"; then
             echo 'Store-only trial field leaked back into the Marketing AI hub'
             exit 1
           fi
 
-          # Anonymous landing is compact and never shows synthetic performance numbers.
+          # Anonymous landing is compact, has one primary path and never shows synthetic performance numbers.
           grep -Fq 'data-public-landing-cleanup' "$hub"
           grep -Fq 'body:not(.member-session-mode) .product-preview{display:none!important}' "$hub"
           grep -Fq 'body:not(.member-session-mode) .hero.hero-v2{display:block' "$hub"
-          grep -Fq 'body:not(.member-session-mode) .member-preview{max-width:820px' "$hub"
+          grep -Fq 'body:not(.member-session-mode) .member-preview{max-width:800px' "$hub"
+          grep -Fq 'body:not(.member-session-mode) .workflow-v2,' "$hub"
+          grep -Fq 'body:not(.member-session-mode) .bottom-cta{display:none!important}' "$hub"
+          grep -Fq 'body:not(.member-session-mode) .custom-domain-panel{display:none!important}' "$hub"
 
           # FREE sees channels but cannot connect them, has limited content tools,
           # and does not get a misleading performance dashboard before real data exists.
