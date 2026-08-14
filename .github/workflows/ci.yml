@@ -87,10 +87,10 @@ jobs:
           # Authenticated members get an application workspace, not the public sales composition.
           grep -Fq 'data-member-session-layout' "$hub"
           grep -Fq 'member-session-mode' "$hub"
-          grep -Fq 'body.member-session-mode .hero-copy>h1' "$hub"
-          grep -Fq 'body.member-session-mode .product-preview' "$hub"
-          grep -Fq 'body.member-session-mode .feature-strip' "$hub"
-          grep -Fq 'body.member-session-mode .bottom-cta' "$hub"
+          grep -Fq 'body.member-session-mode.member-workspace-ready .hero-copy>h1' "$hub"
+          grep -Fq 'body.member-session-mode.member-workspace-ready .product-preview' "$hub"
+          grep -Fq 'body.member-session-mode.member-workspace-ready .feature-strip' "$hub"
+          grep -Fq 'body.member-session-mode.member-workspace-ready .bottom-cta' "$hub"
           grep -Fq "workspaceLink.textContent=member?'작업공간':'무료 체험'" "$hub"
           grep -Fq "pricingLink.textContent=member?'플랜·자동화':'이용 방식'" "$hub"
 
