@@ -81,6 +81,16 @@ jobs:
           grep -Fq 'body.free-member-mode .product-preview{display:none!important}' "$hub"
           grep -Fq 'body.free-member-mode .hero.hero-v2{grid-template-columns:minmax(0,1fr)' "$hub"
 
+          # Authenticated members get an application workspace, not the public sales composition.
+          grep -Fq 'data-member-session-layout' "$hub"
+          grep -Fq 'member-session-mode' "$hub"
+          grep -Fq 'body.member-session-mode .hero-copy>h1' "$hub"
+          grep -Fq 'body.member-session-mode .product-preview' "$hub"
+          grep -Fq 'body.member-session-mode .feature-strip' "$hub"
+          grep -Fq 'body.member-session-mode .bottom-cta' "$hub"
+          grep -Fq "workspaceLink.textContent=member?'작업공간':'무료 체험'" "$hub"
+          grep -Fq "pricingLink.textContent=member?'플랜·자동화':'이용 방식'" "$hub"
+
           grep -Fq 'id="pricing"' "$hub"
           grep -Fq 'id="usageEstimator"' "$hub"
           grep -Fq 'BEST PLAN AI' "$hub"
