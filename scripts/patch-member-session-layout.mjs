@@ -20,16 +20,16 @@ const style = `<style data-member-session-layout>
 body.member-session-mode main{padding-top:14px}
 body.member-session-mode .hero.hero-v2{display:block;grid-template-columns:minmax(0,1fr);max-width:1120px;margin:0 auto 14px;gap:0;align-items:start;text-align:left}
 body.member-session-mode .hero-copy{width:100%}
-body.member-session-mode .hero-kicker,
-body.member-session-mode .hero-copy>h1,
-body.member-session-mode .hero-copy>p,
-body.member-session-mode .hero-pills,
-body.member-session-mode .product-preview,
-body.member-session-mode .member-preview,
-body.member-session-mode .feature-strip,
-body.member-session-mode .workflow-v2,
-body.member-session-mode .bottom-cta,
-body.member-session-mode #memberPricingIntro{display:none!important}
+body.member-session-mode.member-workspace-ready .hero-kicker,
+body.member-session-mode.member-workspace-ready .hero-copy>h1,
+body.member-session-mode.member-workspace-ready .hero-copy>p,
+body.member-session-mode.member-workspace-ready .hero-pills,
+body.member-session-mode.member-workspace-ready .product-preview,
+body.member-session-mode.member-workspace-ready .member-preview,
+body.member-session-mode.member-workspace-ready .feature-strip,
+body.member-session-mode.member-workspace-ready .workflow-v2,
+body.member-session-mode.member-workspace-ready .bottom-cta,
+body.member-session-mode.member-workspace-ready #memberPricingIntro{display:none!important}
 body.member-session-mode #memberTrial{display:block!important;width:100%;max-width:none;margin:0;padding:18px;border-radius:20px;background:rgba(255,255,255,.96);box-shadow:0 12px 36px rgba(52,58,100,.08)}
 body.member-session-mode .hero-copy .trial-lab{width:100%;max-width:none;margin:0}
 body.member-session-mode .trial-lab-head{align-items:center;padding-bottom:4px}
@@ -46,7 +46,7 @@ body.member-session-mode .top-actions .header-link:first-of-type{color:#3346d3}
 @media(max-width:760px){body.member-session-mode main{padding-top:10px}body.member-session-mode .hero.hero-v2{margin:0}body.member-session-mode #memberTrial{padding:14px;border-radius:17px}body.member-session-mode .trial-lab-head{align-items:flex-start}body.member-session-mode .trial-lab-head h2{font-size:22px}body.member-session-mode .member-workspace{padding:12px}body.member-session-mode .pricing-head{padding-top:12px}}
 </style>`;
 
-const runtime = `<script data-member-session-layout>(()=>{const KEY='ekodi-marketing-free-experience';const auth=document.querySelector('#googleCustomerAuth');const trial=document.querySelector('#memberTrial');const preview=document.querySelector('.product-preview');const links=[...document.querySelectorAll('.header-link')];const workspaceLink=links.find(a=>['#memberPreview','#memberTrial','#freeTrial'].includes(a.getAttribute('href')))||links[0];const pricingLink=links.find(a=>a.getAttribute('href')==='#pricing');const url=new URL(location.href);const welcomed=url.searchParams.get('welcome')==='free';const hasMember=()=>document.body.classList.contains('free-member-mode')||document.body.classList.contains('paid-member-mode')||localStorage.getItem(KEY)==='1'||welcomed||/✓|이용중/.test(auth?.textContent||'');function render(){const member=hasMember();document.body.classList.toggle('member-session-mode',member);if(preview)preview.hidden=member;if(trial&&member)trial.hidden=false;if(workspaceLink){workspaceLink.href=member?'#memberTrial':'#memberPreview';workspaceLink.textContent=member?'작업공간':'무료 체험';}if(pricingLink)pricingLink.textContent=member?'플랜·자동화':'이용 방식';if(member&&auth&&auth.textContent.trim()==='무료 체험 중 ✓'){auth.textContent='FREE 회원 ✓';auth.href='#memberTrial';}}render();if(auth)new MutationObserver(render).observe(auth,{childList:true,subtree:true,characterData:true});const bodyObserver=new MutationObserver(render);bodyObserver.observe(document.body,{attributes:true,attributeFilter:['class']});setTimeout(()=>bodyObserver.disconnect(),5000);})();</script>`;
+const runtime = `<script data-member-session-layout>(()=>{const KEY='ekodi-marketing-free-experience';const auth=document.querySelector('#googleCustomerAuth');const trial=document.querySelector('#memberTrial');const preview=document.querySelector('.product-preview');const links=[...document.querySelectorAll('.header-link')];const workspaceLink=links.find(a=>['#memberPreview','#memberTrial','#freeTrial'].includes(a.getAttribute('href')))||links[0];const pricingLink=links.find(a=>a.getAttribute('href')==='#pricing');const url=new URL(location.href);const welcomed=url.searchParams.get('welcome')==='free';const hasMember=()=>document.body.classList.contains('free-member-mode')||document.body.classList.contains('paid-member-mode')||localStorage.getItem(KEY)==='1'||welcomed||/✓|이용중/.test(auth?.textContent||'');function render(){const member=hasMember();document.body.classList.toggle('member-session-mode',member);if(member&&trial){trial.hidden=false;trial.removeAttribute('hidden');}const ready=!!(member&&trial&&trial.isConnected&&trial.querySelector('#freeTrialForm'));document.body.classList.toggle('member-workspace-ready',ready);if(preview)preview.hidden=ready;if(workspaceLink){workspaceLink.href=member?'#memberTrial':'#memberPreview';workspaceLink.textContent=member?'작업공간':'무료 체험';}if(pricingLink)pricingLink.textContent=member?'플랜·자동화':'이용 방식';if(member&&auth&&auth.textContent.trim()==='무료 체험 중 ✓'){auth.textContent='FREE 회원 ✓';auth.href='#memberTrial';}if(member&&trial&&!ready){console.warn('Marketing AI member workspace fallback: trial shell is not ready; public landing remains visible.');}}render();if(auth)new MutationObserver(render).observe(auth,{childList:true,subtree:true,characterData:true});const bodyObserver=new MutationObserver(render);bodyObserver.observe(document.body,{attributes:true,attributeFilter:['class']});setTimeout(()=>bodyObserver.disconnect(),5000);setTimeout(render,0);setTimeout(render,250);})();</script>`;
 
 html = html.replace('</head>', `${style}</head>`);
 html = html.replace('</body>', `${runtime}</body>`);
@@ -54,14 +54,17 @@ html = html.replace('</body>', `${runtime}</body>`);
 for (const required of [
   'data-member-session-layout',
   'member-session-mode',
+  'member-workspace-ready',
   "workspaceLink.textContent=member?'작업공간':'무료 체험'",
   "pricingLink.textContent=member?'플랜·자동화':'이용 방식'",
-  'body.member-session-mode .product-preview',
-  'body.member-session-mode .hero-copy>h1',
-  'body.member-session-mode .feature-strip',
+  'body.member-session-mode.member-workspace-ready .product-preview',
+  'body.member-session-mode.member-workspace-ready .hero-copy>h1',
+  'body.member-session-mode.member-workspace-ready .feature-strip',
+  "trial.removeAttribute('hidden')",
+  "trial.querySelector('#freeTrialForm')",
 ]) {
   if (!html.includes(required)) throw new Error(`Member session layout contract missing: ${required}`);
 }
 
 fs.writeFileSync(hubFile, html);
-console.log('✅ Marketing AI authenticated members now enter a focused workspace instead of the public landing composition');
+console.log('✅ Marketing AI authenticated members enter the focused workspace only after the trial shell is ready; public landing remains as a safe fallback');
