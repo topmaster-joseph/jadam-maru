@@ -67,7 +67,7 @@ for (const target of targets) {
   const html = fs.readFileSync(target.file, 'utf8');
   const hasApiContract = html.includes(apiOrigin) && html.includes(apiPath);
   if (!html.includes('id="customDomainPanel"') || !hasApiContract) throw new Error(`Custom domain UI missing: ${path.relative(root, target.file)}`);
-  if (!html.includes('고객이 소유한 서브도메인')) throw new Error(`Customer ownership copy missing: ${path.relative(root, target.file)}`);
+  if (!html.includes('고객이 이미 소유한 서브도메인')) throw new Error(`Customer ownership copy missing: ${path.relative(root, target.file)}`);
   if (!html.includes('if(!data.eligible){panel.hidden=true')) throw new Error(`Non-Pro domain panel must stay hidden: ${path.relative(root, target.file)}`);
 }
 console.log(`Marketing AI Pro custom-domain self-service UI patched without cluttering FREE/public surfaces: ${patched} surfaces`);
