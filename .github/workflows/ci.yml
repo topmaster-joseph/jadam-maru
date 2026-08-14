@@ -19,7 +19,7 @@ jobs:
           node-version: '24'
       - name: Validate and build Marketing AI
         run: npm run build
-      - name: Verify EKODI free trial, flexible pricing and central authentication
+      - name: Verify EKODI free member workspace, pricing and central authentication
         shell: bash
         run: |
           set -euo pipefail
@@ -43,12 +43,12 @@ jobs:
           hub='dist/marketing-ai/index.html'
           grep -Fq 'id="googleCustomerAuth"' "$hub"
           grep -Fq 'id="freeTrialForm"' "$hub"
-          grep -Fq '30초 마케팅 문구 무료체험' "$hub"
+          grep -Fq '무료회원 콘텐츠 실습실' "$hub"
           grep -Fq 'Marketing AI basic trial engine' "$hub"
           grep -Fq 'Google로 무료 시작' "$hub"
           grep -Fq 'verifyOtp({token_hash:tokenHash' "$hub"
 
-          # Public hub is audience-neutral and trial-first.
+          # Public hub is audience-neutral and login-first.
           grep -Fq '나와 우리를 위한 마케팅,<br>필요한 만큼 자유롭게.' "$hub"
           grep -Fq 'id="trialType"' "$hub"
           grep -Fq 'id="trialSubject"' "$hub"
@@ -61,6 +61,20 @@ jobs:
             echo 'Store-only trial field leaked back into the Marketing AI hub'
             exit 1
           fi
+
+          # FREE sees channels but cannot connect them, and has limited content tools.
+          grep -Fq 'class="member-workspace"' "$hub"
+          grep -Fq 'id="channelGrid"' "$hub"
+          grep -Fq 'id="quotaCaption"' "$hub"
+          grep -Fq 'id="quotaPost"' "$hub"
+          grep -Fq 'id="quotaShorts"' "$hub"
+          grep -Fq 'id="trialTask"' "$hub"
+          grep -Fq 'FREE · 연결 잠김' "$hub"
+          grep -Fq '채널 1개 · 직접 게시' "$hub"
+          grep -Fq '채널 2개 · 예약 게시' "$hub"
+          grep -Fq '채널 5개 · 반복·분석' "$hub"
+          grep -Fq '채널 10개 · 기획→분석' "$hub"
+          grep -Fq 'data-member-workspace' "$hub"
 
           grep -Fq 'id="pricing"' "$hub"
           grep -Fq 'id="usageEstimator"' "$hub"
