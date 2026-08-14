@@ -48,8 +48,20 @@ jobs:
           grep -Fq 'Google로 무료 시작' "$hub"
           grep -Fq 'verifyOtp({token_hash:tokenHash' "$hub"
 
-          # Public hub is product/trial-first, not a store-case directory.
-          grep -Fq '내 매장 마케팅,<br>필요한 만큼 자유롭게.' "$hub"
+          # Public hub is audience-neutral and trial-first.
+          grep -Fq '나와 우리를 위한 마케팅,<br>필요한 만큼 자유롭게.' "$hub"
+          grep -Fq 'id="trialType"' "$hub"
+          grep -Fq 'id="trialSubject"' "$hub"
+          grep -Fq '개인·크리에이터' "$hub"
+          grep -Fq '매장·소상공인' "$hub"
+          grep -Fq '기관·공공기관' "$hub"
+          grep -Fq '비영리·종교단체' "$hub"
+          grep -Fq '모임·협회·커뮤니티' "$hub"
+          if grep -Fq 'id="trialStore"' "$hub"; then
+            echo 'Store-only trial field leaked back into the Marketing AI hub'
+            exit 1
+          fi
+
           grep -Fq 'id="pricing"' "$hub"
           grep -Fq 'id="usageEstimator"' "$hub"
           grep -Fq 'BEST PLAN AI' "$hub"
