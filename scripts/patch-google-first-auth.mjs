@@ -8,6 +8,10 @@ const publishableKey = 'sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_';
 const accessApi = `${supabaseUrl}/functions/v1/access-api`;
 const allowedReturnOrigins = [
   'https://marketing.ekodi.kr',
+  'https://jadam.ai.ekodi.kr',
+  'https://pizzamaru.ai.ekodi.kr',
+  'https://yogurt.ai.ekodi.kr',
+  'https://cgma.ai.ekodi.kr',
   'https://jadam.ekodi.kr',
   'https://pizzamaru.ekodi.kr',
   'https://yogurt.ekodi.kr',
