@@ -40,16 +40,36 @@ const ALLOWED=new Set(${JSON.stringify(allowedReturnOrigins)});
 const ORIGIN_TENANT=${JSON.stringify(preferredTenantByOrigin)};
 const STORAGE='ekodi-marketing-workspace';
 const hash=new URLSearchParams(location.hash.replace(/^#/,''));
-const tokenHash=hash.get('ekodi_token');
-const handedWorkspace=hash.get('ekodi_workspace');
-const handedTenant=hash.get('ekodi_tenant');
-const handedStore=hash.get('ekodi_store');
+const legacyTokenHash=hash.get('ekodi_token');
+const legacyType=hash.get('ekodi_type')||'email';
+const legacyWorkspace=hash.get('ekodi_workspace');
+const legacyTenant=hash.get('ekodi_tenant');
+const legacyStore=hash.get('ekodi_store');
 const dynamicAiOrigin=()=>location.protocol==='https:'&&/^[a-z0-9-]+\\.ai\\.ekodi\\.kr$/i.test(location.hostname);
 const auth=document.querySelector('#googleCustomerAuth');
 if(auth){
   const returnTo=(ALLOWED.has(location.origin)||dynamicAiOrigin())?location.origin+location.pathname:'https://marketing.ekodi.kr/';
   auth.href='https://auth.ekodi.kr/?site=marketing&return_to='+encodeURIComponent(returnTo);
 }
+window.EKODI_MARKETING_AUTH_PENDING=true;
+async function consumeSecureHandoff(){
+  try{
+    const r=await fetch(MARKETING_API+'/api/marketing/handoff/consume',{method:'POST',credentials:'include',cache:'no-store'});
+    if(r.status===204)return null;
+    const text=await r.text();let data={};try{data=text?JSON.parse(text):{}}catch{}
+    if(!r.ok){
+      if([409,410].includes(r.status)&&auth){auth.textContent='로그인 연결 다시 시도';auth.title=data?.error||'로그인 연결정보가 만료되었습니다.'}
+      return null;
+    }
+    return data?.tokenHash?data:null;
+  }catch(error){console.warn('Marketing AI secure handoff consume unavailable',error);return null}
+}
+const secureHandoff=await consumeSecureHandoff();
+const tokenHash=secureHandoff?.tokenHash||legacyTokenHash;
+const tokenType=secureHandoff?.type||legacyType;
+const handedWorkspace=secureHandoff?.workspace?.workspace_key||legacyWorkspace;
+const handedTenant=secureHandoff?.workspace?.tenant_id||legacyTenant;
+const handedStore=secureHandoff?.workspace?.store_id||legacyStore;
 const hasStoredSession=()=>{try{const value=localStorage.getItem(AUTH_STORAGE_KEY);return Boolean(value&&value!=='null'&&value!=='undefined')}catch{return false}};
 const needsAuthClient=Boolean(tokenHash||handedWorkspace||handedTenant||handedStore||hasStoredSession());
 window.EKODI_MARKETING_AUTH_PENDING=needsAuthClient;
@@ -77,7 +97,7 @@ if(!needsAuthClient){
     const sb=createClient(SUPABASE_URL,PUBLISHABLE_KEY,{auth:{detectSessionInUrl:true,persistSession:true}});
     let handoffError=null;
     if(tokenHash){
-      try{const{error}=await timeout(sb.auth.verifyOtp({token_hash:tokenHash,type:'email'}),10000,'verify_otp_timeout');if(error)throw error}
+      try{const{error}=await timeout(sb.auth.verifyOtp({token_hash:tokenHash,type:tokenType}),10000,'verify_otp_timeout');if(error)throw error}
       catch(e){handoffError=e;console.error('EKODI central handoff',e)}
     }
     const{data:{session}}=await sb.auth.getSession();
@@ -179,16 +199,17 @@ for (const file of htmlFiles(out)) {
   const html = fs.readFileSync(file, 'utf8');
   if (!html.includes('id="googleCustomerAuth"')) continue;
   if (!html.includes('data-ekodi-workspace-handoff')) throw new Error(`Workspace handoff receiver missing in ${path.relative(root, file)}`);
+  if (!html.includes("MARKETING_API+'/api/marketing/handoff/consume'")) throw new Error(`HttpOnly handoff consume endpoint missing in ${path.relative(root, file)}`);
+  if (!html.includes("credentials:'include'")) throw new Error(`Credentialed handoff consume request missing in ${path.relative(root, file)}`);
+  if (!html.includes('secureHandoff?.tokenHash||legacyTokenHash')) throw new Error(`Secure handoff must take priority over legacy fragments in ${path.relative(root, file)}`);
   if (!html.includes("ACCESS+'/workspaces?site=marketing'")) throw new Error(`Workspace list validation missing in ${path.relative(root, file)}`);
-  if (!html.includes("hash.get('ekodi_workspace')")) throw new Error(`Selected workspace handoff key missing in ${path.relative(root, file)}`);
-  if (!html.includes("hash.get('ekodi_store')")) throw new Error(`Selected store handoff key missing in ${path.relative(root, file)}`);
-  if (!html.includes("hash.get('ekodi_tenant')")) throw new Error(`Selected tenant handoff key missing in ${path.relative(root, file)}`);
+  if (!html.includes("hash.get('ekodi_token')")) throw new Error(`Legacy URL handoff fallback missing in ${path.relative(root, file)}`);
+  if (!html.includes("hash.get('ekodi_workspace')")) throw new Error(`Legacy selected workspace fallback missing in ${path.relative(root, file)}`);
   if (!html.includes('needsAuthClient=Boolean')) throw new Error(`Anonymous auth fast path missing in ${path.relative(root, file)}`);
   if (!html.includes('window.EKODI_MARKETING_AUTH_PENDING=needsAuthClient')) throw new Error(`Auth pending bridge missing in ${path.relative(root, file)}`);
   if (!html.includes("document.body.dataset.ekodiAuthState='anonymous'")) throw new Error(`Anonymous auth state missing in ${path.relative(root, file)}`);
   if (!html.includes('supabase_primary_timeout')) throw new Error(`Primary Supabase CDN timeout guard missing in ${path.relative(root, file)}`);
   if (!html.includes('https://esm.sh/@supabase/supabase-js@2?bundle')) throw new Error(`Supabase fallback CDN missing in ${path.relative(root, file)}`);
-  if (!html.includes("if(session&&(tokenHash||handedWorkspace||handedTenant||handedStore))")) throw new Error(`Successful handoff cleanup guard missing in ${path.relative(root, file)}`);
   if (!html.includes('window.EKODI_MARKETING_AUTH_TOKEN=session.access_token')) throw new Error(`Shared in-memory auth token bridge missing in ${path.relative(root, file)}`);
   if (!html.includes('window.EKODI_MARKETING_CONTEXT')) throw new Error(`Workspace context export missing in ${path.relative(root, file)}`);
   if (!html.includes("sessionStorage.setItem(STORAGE,selected.workspace_key)")) throw new Error(`Verified workspace persistence missing in ${path.relative(root, file)}`);
@@ -205,4 +226,4 @@ for (const dir of ['jadam', 'pizzamaru', 'yogurtpurple']) {
   if (!html.includes('ORIGIN_TENANT')) throw new Error(`Current-site workspace preference missing in ${dir}`);
 }
 
-console.log(`Marketing AI selected workspace handoff + anonymous fast path + resilient Supabase fallback patched: ${patched} pages`);
+console.log(`Marketing AI HttpOnly one-time handoff consume + legacy URL fallback + workspace resolver patched: ${patched} pages`);
