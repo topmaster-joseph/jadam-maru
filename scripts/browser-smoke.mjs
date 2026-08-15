@@ -40,13 +40,25 @@ const port = typeof address === 'object' && address ? address.port : 0;
 if (!port) throw new Error('Browser smoke server failed to bind a port');
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-async function waitForFile(file, timeoutMs = 6000) {
+async function reservePort() {
+  const probe = http.createServer();
+  await new Promise((resolve, reject) => { probe.once('error', reject); probe.listen(0, '127.0.0.1', resolve); });
+  const address = probe.address();
+  const reserved = typeof address === 'object' && address ? address.port : 0;
+  await new Promise(resolve => probe.close(resolve));
+  if (!reserved) throw new Error('Could not reserve a Chrome debugging port');
+  return reserved;
+}
+
+async function waitForCdp(endpoint, child, stderrRef, timeoutMs = 8000) {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
-    if (fs.existsSync(file)) return;
-    await sleep(60);
+    if (child.exitCode !== null) throw new Error(`Chrome exited before CDP became ready (${child.exitCode}).\n${stderrRef()}`);
+    const version = await fetch(`${endpoint}/json/version`).then(response => response.ok ? response.json() : null).catch(() => null);
+    if (version?.Browser) return version;
+    await sleep(80);
   }
-  throw new Error(`Timed out waiting for ${file}`);
+  throw new Error(`Chrome DevTools endpoint did not become ready at ${endpoint}.\n${stderrRef()}`);
 }
 
 async function cdpClient(wsUrl) {
@@ -95,17 +107,16 @@ async function stopChrome(child, client) {
 
 async function runCase(name, query) {
   const profile = fs.mkdtempSync(path.join('/tmp', 'ekodi-marketing-chrome-'));
-  const activePortFile = path.join(profile, 'DevToolsActivePort');
+  const debugPort = await reservePort();
+  const endpoint = `http://127.0.0.1:${debugPort}`;
   const url = `http://127.0.0.1:${port}/__browser-smoke.html?${query}`;
-  const args = ['--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--disable-background-networking','--disable-component-update','--disable-default-apps','--disable-extensions','--no-first-run','--remote-debugging-port=0',`--user-data-dir=${profile}`,'about:blank'];
+  const args = ['--headless=new','--no-sandbox','--disable-gpu','--disable-dev-shm-usage','--disable-background-networking','--disable-component-update','--disable-default-apps','--disable-extensions','--no-first-run','--remote-debugging-address=127.0.0.1',`--remote-debugging-port=${debugPort}`,`--user-data-dir=${profile}`,'about:blank'];
   const child = spawn(chrome, args, { stdio: ['ignore', 'ignore', 'pipe'] });
   let stderr = '';
   child.stderr.on('data', chunk => { stderr += chunk.toString(); });
   let client = null;
   try {
-    await waitForFile(activePortFile);
-    const [debugPort] = fs.readFileSync(activePortFile, 'utf8').trim().split(/\r?\n/);
-    const endpoint = `http://127.0.0.1:${debugPort}`;
+    await waitForCdp(endpoint, child, () => stderr.slice(-1800));
     let targets = [];
     const deadline = Date.now() + 4000;
     while (Date.now() < deadline && !targets.length) {
@@ -113,7 +124,7 @@ async function runCase(name, query) {
       if (!targets.length) await sleep(80);
     }
     const target = targets.find(item => item.type === 'page') || targets[0];
-    if (!target?.webSocketDebuggerUrl) throw new Error(`${name}: Chrome page target not available`);
+    if (!target?.webSocketDebuggerUrl) throw new Error(`${name}: Chrome page target not available.\n${stderr.slice(-1200)}`);
     client = await cdpClient(target.webSocketDebuggerUrl);
     await client.send('Page.enable');
     await client.send('Runtime.enable');
