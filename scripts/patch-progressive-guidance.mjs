@@ -33,7 +33,40 @@ body.member-session-mode:not(.trial-complete) .workspace-head p::after{content:'
 @media(max-width:760px){body.member-session-mode .post-trial-guide{display:grid}.post-trial-actions{justify-content:stretch}.post-trial-actions button{flex:1}.post-trial-guide p{font-size:9px}}
 </style>`;
 
-const runtime = `<script data-progressive-guidance>(()=>{const DONE='ekodi-marketing-first-trial-complete';const form=document.querySelector('#freeTrialForm');const results=document.querySelector('#trialResults');const guide=document.querySelector('#postTrialGuide');const open=document.querySelector('#openPlanGuide');const another=document.querySelector('#tryAnotherContent');const pricing=document.querySelector('#pricing');const pricingLink=[...document.querySelectorAll('.header-link')].find(a=>a.getAttribute('href')==='#pricing');const isPaid=()=>document.body.classList.contains('paid-member-mode');const completed=()=>isPaid()||localStorage.getItem(DONE)==='1';function render(){const done=completed();document.body.classList.toggle('trial-complete',done);if(guide)guide.hidden=!done;if(pricingLink)pricingLink.hidden=!done;if(!done)document.body.classList.remove('pricing-open');}function complete(){localStorage.setItem(DONE,'1');render();requestAnimationFrame(()=>guide?.scrollIntoView({behavior:'smooth',block:'nearest'}));}form?.addEventListener('submit',()=>setTimeout(()=>{if(results&&!results.hidden)complete()},0));open?.addEventListener('click',()=>{document.body.classList.add('pricing-open');pricing?.scrollIntoView({behavior:'smooth',block:'start'});});another?.addEventListener('click',()=>{document.body.classList.remove('pricing-open');form?.scrollIntoView({behavior:'smooth',block:'center'});form?.querySelector('input:not([type="hidden"])')?.focus({preventScroll:true});});pricingLink?.addEventListener('click',e=>{if(!completed()){e.preventDefault();return}e.preventDefault();document.body.classList.add('pricing-open');pricing?.scrollIntoView({behavior:'smooth',block:'start'});});new MutationObserver(render).observe(document.body,{attributes:true,attributeFilter:['class']});render();})();</script>`;
+const runtime = `<script data-progressive-guidance>(()=>{
+const DONE='ekodi-marketing-first-trial-complete';
+const form=document.querySelector('#freeTrialForm');
+const results=document.querySelector('#trialResults');
+const guide=document.querySelector('#postTrialGuide');
+const open=document.querySelector('#openPlanGuide');
+const another=document.querySelector('#tryAnotherContent');
+const pricing=document.querySelector('#pricing');
+const pricingLink=[...document.querySelectorAll('.header-link')].find(a=>a.getAttribute('href')==='#pricing');
+const isPaid=()=>document.body.classList.contains('paid-member-mode');
+const completed=()=>isPaid()||localStorage.getItem(DONE)==='1';
+const setBodyClass=(name,enabled)=>{const next=Boolean(enabled);if(document.body.classList.contains(name)===next)return false;document.body.classList.toggle(name,next);return true};
+let renderQueued=false;
+function render(){
+  renderQueued=false;
+  const done=completed();
+  setBodyClass('trial-complete',done);
+  if(guide&&guide.hidden===done)guide.hidden=!done;
+  if(pricingLink&&pricingLink.hidden===done)pricingLink.hidden=!done;
+  if(!done)setBodyClass('pricing-open',false);
+}
+function scheduleRender(){if(renderQueued)return;renderQueued=true;requestAnimationFrame(render)}
+function complete(){localStorage.setItem(DONE,'1');scheduleRender();requestAnimationFrame(()=>guide?.scrollIntoView({behavior:'smooth',block:'nearest'}))}
+form?.addEventListener('submit',()=>setTimeout(()=>{if(results&&!results.hidden)complete()},0));
+open?.addEventListener('click',()=>{setBodyClass('pricing-open',true);pricing?.scrollIntoView({behavior:'smooth',block:'start'})});
+another?.addEventListener('click',()=>{setBodyClass('pricing-open',false);form?.scrollIntoView({behavior:'smooth',block:'center'});form?.querySelector('input:not([type="hidden"])')?.focus({preventScroll:true})});
+pricingLink?.addEventListener('click',e=>{if(!completed()){e.preventDefault();return}e.preventDefault();setBodyClass('pricing-open',true);pricing?.scrollIntoView({behavior:'smooth',block:'start'})});
+const bodyObserver=new MutationObserver(scheduleRender);
+bodyObserver.observe(document.body,{attributes:true,attributeFilter:['class']});
+setTimeout(()=>bodyObserver.disconnect(),5000);
+window.addEventListener('ekodi:auth-ready',scheduleRender);
+window.addEventListener('ekodi:workspace-ready',scheduleRender);
+render();
+})();</script>`;
 
 html = html.replace('</head>', `${style}</head>`);
 html = html.replace('</body>', `${runtime}</body>`);
@@ -47,9 +80,13 @@ for (const required of [
   'trial-complete',
   'pricing-open',
   'body.member-session-mode:not(.trial-complete) #pricing',
+  'setBodyClass',
+  'scheduleRender',
+  'requestAnimationFrame(render)',
+  'bodyObserver.disconnect()',
 ]) {
   if (!html.includes(required)) throw new Error(`Progressive guidance contract missing: ${required}`);
 }
 
 fs.writeFileSync(hubFile, html);
-console.log('✅ Marketing AI now prioritizes hands-on trial and reveals detailed plan guidance only after first use');
+console.log('✅ Marketing AI progressive guidance coalesces class mutations and disconnects its startup observer');
