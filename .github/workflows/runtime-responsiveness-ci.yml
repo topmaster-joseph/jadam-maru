@@ -1,0 +1,55 @@
+name: Marketing AI Runtime Responsiveness
+
+on:
+  pull_request:
+    paths:
+      - 'package.json'
+      - 'scripts/patch-workspace-handoff.mjs'
+      - 'scripts/patch-custom-domain.mjs'
+      - 'scripts/patch-runtime-stability.mjs'
+      - 'scripts/patch-handoff-url-scrub.mjs'
+      - 'scripts/browser-smoke.mjs'
+      - '.github/workflows/runtime-responsiveness-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'package.json'
+      - 'scripts/patch-workspace-handoff.mjs'
+      - 'scripts/patch-custom-domain.mjs'
+      - 'scripts/patch-runtime-stability.mjs'
+      - 'scripts/patch-handoff-url-scrub.mjs'
+      - 'scripts/browser-smoke.mjs'
+      - '.github/workflows/runtime-responsiveness-ci.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  chromium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Build Marketing AI
+        run: npm run build
+      - name: Verify anonymous fast path contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          hub='dist/marketing-ai/index.html'
+          grep -Fq 'needsAuthClient=Boolean' "$hub"
+          grep -Fq "document.body.dataset.ekodiAuthState='anonymous'" "$hub"
+          grep -Fq 'window.EKODI_MARKETING_AUTH_PENDING=needsAuthClient' "$hub"
+          grep -Fq 'window.EKODI_MARKETING_AUTH_TOKEN=session.access_token' "$hub"
+          grep -Fq 'authTokenWhenReady' "$hub"
+          grep -Fq 'data-custom-domain-ui' "$hub"
+          grep -Fq 'data-ekodi-handoff-scrub' "$hub"
+          if grep -Fq "import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';" "$hub"; then
+            echo 'Anonymous hub still contains an eager static Supabase import'
+            exit 1
+          fi
+      - name: Run real Chromium responsiveness smoke test
+        run: npm run browser-smoke
