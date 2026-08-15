@@ -29,7 +29,45 @@ const style=`<style data-free-member-experience>
 
 const preview=`<section class="member-preview" id="memberPreview"><div class="member-preview-head"><small>LOGIN → TRY IT YOURSELF</small><h2>무엇을 할 수 있는지 먼저 보고,<br>로그인 후 바로 직접 써보세요.</h2><p>처음부터 요금제를 고르게 하지 않습니다. 무료회원으로 들어오면 실제 화면에서 간단한 마케팅 작업을 바로 체험할 수 있습니다.</p></div><div class="member-preview-grid"><article class="member-preview-card"><small>01 · SNS 문구</small><strong>홍보 문구 만들기</strong><p>매장명과 오늘 알릴 내용을 넣어 게시용 문구 초안을 직접 만들어 봅니다.</p></article><article class="member-preview-card"><small>02 · HASHTAGS</small><strong>해시태그 추천</strong><p>매장과 상품 키워드를 바탕으로 바로 활용할 태그 묶음을 확인합니다.</p></article><article class="member-preview-card"><small>03 · SHORTS</small><strong>쇼츠 훅 만들기</strong><p>짧은 영상의 첫 문장과 후킹 문구를 직접 생성해 사용감을 확인합니다.</p></article></div><div class="member-preview-action"><a href="${authHref}">Google로 무료 체험 시작</a></div><p class="member-preview-note">로그인 후 결제 화면이 아니라 무료 체험공간으로 바로 이동합니다.</p></section>`;
 
-const runtime=`<script data-free-member-experience>(()=>{const KEY='ekodi-marketing-free-experience';const url=new URL(location.href);const auth=document.querySelector('#googleCustomerAuth');const landingPreview=document.querySelector('#memberPreview');const trial=document.querySelector('#memberTrial');const pricing=document.querySelector('#pricing');const pricingIntro=document.querySelector('#memberPricingIntro');const headerFree=document.querySelector('.header-link[href="#memberPreview"]');const dashboardPreview=document.querySelector('.product-preview');const welcomed=url.searchParams.get('welcome')==='free';if(welcomed)localStorage.setItem(KEY,'1');const hasMemberSignal=()=>localStorage.getItem(KEY)==='1'||welcomed||/✓|이용중/.test(auth?.textContent||'');const hasPaidPlan=()=>/(AUTO|PRO|PLUS|FLEX)/.test((auth?.textContent||'').toUpperCase());function render(){const member=hasMemberSignal();const paid=member&&hasPaidPlan();if(member)localStorage.setItem(KEY,'1');document.body.classList.toggle('free-member-mode',member&&!paid);document.body.classList.toggle('paid-member-mode',paid);if(landingPreview)landingPreview.hidden=member;if(trial){trial.hidden=false;trial.removeAttribute('hidden');trial.style.display=member||location.hash==='#memberTrial'?'block':'';}if(pricing)pricing.hidden=!member;if(pricingIntro)pricingIntro.hidden=!member;if(dashboardPreview)dashboardPreview.hidden=member&&!paid;if(headerFree){headerFree.href=member?'#memberTrial':'#memberPreview';headerFree.textContent=member?'무료 체험':'무료 체험';}if(member&&auth&&!/✓|이용중/.test(auth.textContent||'')){auth.textContent='무료 체험 중 ✓';auth.href='#memberTrial';}if((member||location.hash==='#memberTrial')&&location.hash==='#memberTrial')setTimeout(()=>trial?.scrollIntoView({behavior:'smooth',block:'start'}),120);}render();if(auth)new MutationObserver(render).observe(auth,{childList:true,subtree:true,characterData:true});window.addEventListener('hashchange',render);if(welcomed){url.searchParams.delete('welcome');history.replaceState({},document.title,url.pathname+(url.searchParams.toString()?'?'+url.searchParams.toString():'')+'#memberTrial');render();}})();</script>`;
+const runtime=`<script data-free-member-experience>(()=>{
+const KEY='ekodi-marketing-free-experience';
+const url=new URL(location.href);
+const auth=document.querySelector('#googleCustomerAuth');
+const landingPreview=document.querySelector('#memberPreview');
+const trial=document.querySelector('#memberTrial');
+const pricing=document.querySelector('#pricing');
+const pricingIntro=document.querySelector('#memberPricingIntro');
+const headerFree=document.querySelector('.header-link[href="#memberPreview"]');
+const dashboardPreview=document.querySelector('.product-preview');
+const welcomed=url.searchParams.get('welcome')==='free';
+if(welcomed)localStorage.setItem(KEY,'1');
+const hasMemberSignal=()=>localStorage.getItem(KEY)==='1'||welcomed||/✓|이용중/.test(auth?.textContent||'');
+const hasPaidPlan=()=>/(AUTO|PRO|PLUS|FLEX)/.test((auth?.textContent||'').toUpperCase());
+const setBodyClass=(name,enabled)=>{const next=Boolean(enabled);if(document.body.classList.contains(name)===next)return false;document.body.classList.toggle(name,next);return true};
+let renderQueued=false;
+function render(){
+  renderQueued=false;
+  const member=hasMemberSignal();
+  const paid=member&&hasPaidPlan();
+  if(member&&localStorage.getItem(KEY)!=='1')localStorage.setItem(KEY,'1');
+  setBodyClass('free-member-mode',member&&!paid);
+  setBodyClass('paid-member-mode',paid);
+  if(landingPreview&&landingPreview.hidden!==member)landingPreview.hidden=member;
+  if(trial){if(trial.hidden){trial.hidden=false;trial.removeAttribute('hidden')}const display=member||location.hash==='#memberTrial'?'block':'';if(trial.style.display!==display)trial.style.display=display}
+  if(pricing&&pricing.hidden===member)pricing.hidden=!member;
+  if(pricingIntro&&pricingIntro.hidden===member)pricingIntro.hidden=!member;
+  if(dashboardPreview&&dashboardPreview.hidden!==(member&&!paid))dashboardPreview.hidden=member&&!paid;
+  if(headerFree){const href=member?'#memberTrial':'#memberPreview';if(headerFree.getAttribute('href')!==href)headerFree.href=href;if(headerFree.textContent!=='무료 체험')headerFree.textContent='무료 체험'}
+  if(member&&auth&&!/✓|이용중/.test(auth.textContent||'')){auth.textContent='무료 체험 중 ✓';auth.href='#memberTrial'}
+  if((member||location.hash==='#memberTrial')&&location.hash==='#memberTrial')setTimeout(()=>trial?.scrollIntoView({behavior:'smooth',block:'start'}),120);
+}
+function scheduleRender(){if(renderQueued)return;renderQueued=true;requestAnimationFrame(render)}
+render();
+if(auth)new MutationObserver(scheduleRender).observe(auth,{childList:true,subtree:true,characterData:true});
+window.addEventListener('hashchange',scheduleRender);
+window.addEventListener('ekodi:auth-ready',scheduleRender);
+if(welcomed){url.searchParams.delete('welcome');history.replaceState({},document.title,url.pathname+(url.searchParams.toString()?'?'+url.searchParams.toString():'')+'#memberTrial');scheduleRender()}
+})();</script>`;
 
 html=html.replace('</head>',`${style}</head>`);
 const trialMarker='<section class="trial-lab member-trial" id="memberTrial">';
@@ -37,9 +75,9 @@ if(!html.includes(trialMarker))throw new Error('Member trial section could not b
 html=html.replace(trialMarker,`${preview}${trialMarker}`);
 html=html.replace('</body>',`${runtime}</body>`);
 
-for(const required of ['id="memberPreview"','id="memberTrial"','id="freeTrialForm"','Google로 무료 체험 시작','data-free-member-experience','free-member-mode','dashboardPreview','.member-trial:target',"trial.removeAttribute('hidden')",'hashchange']){
+for(const required of ['id="memberPreview"','id="memberTrial"','id="freeTrialForm"','Google로 무료 체험 시작','data-free-member-experience','free-member-mode','dashboardPreview.hidden=member&&!paid','.member-trial:target',"trial.removeAttribute('hidden')",'hashchange','scheduleRender','requestAnimationFrame(render)']){
   if(!html.includes(required))throw new Error(`Free-member experience contract missing: ${required}`);
 }
 
 fs.writeFileSync(hubFile,html);
-console.log('✅ Marketing AI landing is explanation-first; FREE members enter a focused hands-on workspace and #memberTrial remains visible as a fail-safe target');
+console.log('✅ Marketing AI free-member experience now coalesces auth-driven rendering and writes DOM state only when it changes');
