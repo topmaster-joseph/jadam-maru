@@ -46,7 +46,41 @@ body.member-session-mode .top-actions .header-link:first-of-type{color:#3346d3}
 @media(max-width:760px){body.member-session-mode main{padding-top:10px}body.member-session-mode .hero.hero-v2{margin:0}body.member-session-mode #memberTrial{padding:14px;border-radius:17px}body.member-session-mode .trial-lab-head{align-items:flex-start}body.member-session-mode .trial-lab-head h2{font-size:22px}body.member-session-mode .member-workspace{padding:12px}body.member-session-mode .pricing-head{padding-top:12px}}
 </style>`;
 
-const runtime = `<script data-member-session-layout>(()=>{const KEY='ekodi-marketing-free-experience';const auth=document.querySelector('#googleCustomerAuth');const trial=document.querySelector('#memberTrial');const preview=document.querySelector('.product-preview');const links=[...document.querySelectorAll('.header-link')];const workspaceLink=links.find(a=>['#memberPreview','#memberTrial','#freeTrial'].includes(a.getAttribute('href')))||links[0];const pricingLink=links.find(a=>a.getAttribute('href')==='#pricing');const url=new URL(location.href);const welcomed=url.searchParams.get('welcome')==='free';const hasMember=()=>document.body.classList.contains('free-member-mode')||document.body.classList.contains('paid-member-mode')||localStorage.getItem(KEY)==='1'||welcomed||/✓|이용중/.test(auth?.textContent||'');function render(){const member=hasMember();document.body.classList.toggle('member-session-mode',member);if(member&&trial){trial.hidden=false;trial.removeAttribute('hidden');}const ready=!!(member&&trial&&trial.isConnected&&trial.querySelector('#freeTrialForm'));document.body.classList.toggle('member-workspace-ready',ready);if(preview)preview.hidden=ready;if(workspaceLink){workspaceLink.href=member?'#memberTrial':'#memberPreview';workspaceLink.textContent=member?'작업공간':'무료 체험';}if(pricingLink)pricingLink.textContent=member?'플랜·자동화':'이용 방식';if(member&&auth&&auth.textContent.trim()==='무료 체험 중 ✓'){auth.textContent='FREE 회원 ✓';auth.href='#memberTrial';}if(member&&trial&&!ready){console.warn('Marketing AI member workspace fallback: trial shell is not ready; public landing remains visible.');}}render();if(auth)new MutationObserver(render).observe(auth,{childList:true,subtree:true,characterData:true});const bodyObserver=new MutationObserver(render);bodyObserver.observe(document.body,{attributes:true,attributeFilter:['class']});setTimeout(()=>bodyObserver.disconnect(),5000);setTimeout(render,0);setTimeout(render,250);})();</script>`;
+const runtime = `<script data-member-session-layout>(()=>{
+const KEY='ekodi-marketing-free-experience';
+const auth=document.querySelector('#googleCustomerAuth');
+const trial=document.querySelector('#memberTrial');
+const preview=document.querySelector('.product-preview');
+const links=[...document.querySelectorAll('.header-link')];
+const workspaceLink=links.find(a=>['#memberPreview','#memberTrial','#freeTrial'].includes(a.getAttribute('href')))||links[0];
+const pricingLink=links.find(a=>a.getAttribute('href')==='#pricing');
+const url=new URL(location.href);
+const welcomed=url.searchParams.get('welcome')==='free';
+const hasMember=()=>document.body.classList.contains('free-member-mode')||document.body.classList.contains('paid-member-mode')||localStorage.getItem(KEY)==='1'||welcomed||/✓|이용중/.test(auth?.textContent||'');
+const setBodyClass=(name,enabled)=>{const next=Boolean(enabled);if(document.body.classList.contains(name)===next)return false;document.body.classList.toggle(name,next);return true};
+let renderQueued=false;
+function render(){
+  renderQueued=false;
+  const member=hasMember();
+  setBodyClass('member-session-mode',member);
+  if(member&&trial&&trial.hidden){trial.hidden=false;trial.removeAttribute('hidden')}
+  const ready=!!(member&&trial&&trial.isConnected&&trial.querySelector('#freeTrialForm'));
+  setBodyClass('member-workspace-ready',ready);
+  if(preview&&preview.hidden!==ready)preview.hidden=ready;
+  if(workspaceLink){const href=member?'#memberTrial':'#memberPreview';const text=member?'작업공간':'무료 체험';if(workspaceLink.getAttribute('href')!==href)workspaceLink.href=href;if(workspaceLink.textContent!==text)workspaceLink.textContent=text}
+  if(pricingLink){const text=member?'플랜·자동화':'이용 방식';if(pricingLink.textContent!==text)pricingLink.textContent=text}
+  if(member&&auth&&auth.textContent.trim()==='무료 체험 중 ✓'){auth.textContent='FREE 회원 ✓';auth.href='#memberTrial'}
+  if(member&&trial&&!ready)console.warn('Marketing AI member workspace fallback: trial shell is not ready; public landing remains visible.');
+}
+function scheduleRender(){if(renderQueued)return;renderQueued=true;requestAnimationFrame(render)}
+render();
+if(auth)new MutationObserver(scheduleRender).observe(auth,{childList:true,subtree:true,characterData:true});
+const bodyObserver=new MutationObserver(scheduleRender);
+bodyObserver.observe(document.body,{attributes:true,attributeFilter:['class']});
+setTimeout(()=>bodyObserver.disconnect(),5000);
+setTimeout(scheduleRender,0);
+setTimeout(scheduleRender,250);
+})();</script>`;
 
 html = html.replace('</head>', `${style}</head>`);
 html = html.replace('</body>', `${runtime}</body>`);
@@ -55,8 +89,11 @@ for (const required of [
   'data-member-session-layout',
   'member-session-mode',
   'member-workspace-ready',
-  "workspaceLink.textContent=member?'작업공간':'무료 체험'",
-  "pricingLink.textContent=member?'플랜·자동화':'이용 방식'",
+  "workspaceLink.textContent!==text",
+  "pricingLink.textContent!==text",
+  'setBodyClass',
+  'scheduleRender',
+  'requestAnimationFrame(render)',
   'body.member-session-mode.member-workspace-ready .product-preview',
   'body.member-session-mode.member-workspace-ready .hero-copy>h1',
   'body.member-session-mode.member-workspace-ready .feature-strip',
@@ -67,4 +104,4 @@ for (const required of [
 }
 
 fs.writeFileSync(hubFile, html);
-console.log('✅ Marketing AI authenticated members enter the focused workspace only after the trial shell is ready; public landing remains as a safe fallback');
+console.log('✅ Marketing AI member layout uses idempotent class writes and one animation-frame render per mutation burst');
