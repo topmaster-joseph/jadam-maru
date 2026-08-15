@@ -67,8 +67,8 @@ function render(){
   const ready=!!(member&&trial&&trial.isConnected&&trial.querySelector('#freeTrialForm'));
   setBodyClass('member-workspace-ready',ready);
   if(preview&&preview.hidden!==ready)preview.hidden=ready;
-  if(workspaceLink){const href=member?'#memberTrial':'#memberPreview';const text=member?'작업공간':'무료 체험';if(workspaceLink.getAttribute('href')!==href)workspaceLink.href=href;if(workspaceLink.textContent!==text)workspaceLink.textContent=text}
-  if(pricingLink){const text=member?'플랜·자동화':'이용 방식';if(pricingLink.textContent!==text)pricingLink.textContent=text}
+  if(workspaceLink){const href=member?'#memberTrial':'#memberPreview';if(workspaceLink.getAttribute('href')!==href)workspaceLink.href=href;if(workspaceLink.textContent!==(member?'작업공간':'무료 체험'))workspaceLink.textContent=member?'작업공간':'무료 체험'}
+  if(pricingLink&&pricingLink.textContent!==(member?'플랜·자동화':'이용 방식'))pricingLink.textContent=member?'플랜·자동화':'이용 방식';
   if(member&&auth&&auth.textContent.trim()==='무료 체험 중 ✓'){auth.textContent='FREE 회원 ✓';auth.href='#memberTrial'}
   if(member&&trial&&!ready)console.warn('Marketing AI member workspace fallback: trial shell is not ready; public landing remains visible.');
 }
@@ -89,8 +89,8 @@ for (const required of [
   'data-member-session-layout',
   'member-session-mode',
   'member-workspace-ready',
-  "workspaceLink.textContent!==text",
-  "pricingLink.textContent!==text",
+  "workspaceLink.textContent=member?'작업공간':'무료 체험'",
+  "pricingLink.textContent=member?'플랜·자동화':'이용 방식'",
   'setBodyClass',
   'scheduleRender',
   'requestAnimationFrame(render)',
