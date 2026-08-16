@@ -1,21 +1,21 @@
 {
-  "version": "2026-08-beta-2",
-  "status": "beta_preview",
+  "version": "2026-08-beta-3",
+  "status": "runtime_staging",
   "currency": "KRW",
   "philosophy": "필요한 만큼 자유롭게. 많이 사용할수록 더 저렴하게. 맡길수록 더 편리하게.",
   "customerPromise": [
-    "구독하지 않아도 필요한 기능을 1회 또는 종량제로 이용할 수 있습니다.",
-    "무료회원도 콘텐츠 제작 기능을 제한적으로 직접 사용해 볼 수 있습니다.",
-    "마케팅 채널은 무료회원 화면에도 표시하되 실제 연결·게시·자동화는 이용 등급에 따라 단계적으로 열립니다.",
-    "상위 플랜일수록 같은 기능의 단가가 낮아지고 연결 가능한 채널 수와 자동화 범위가 넓어집니다.",
+    "Google 로그인으로 확인된 EKODI 회원에게 FREE를 제공합니다.",
+    "FREE는 짧은 문구·게시글·쇼츠 기획을 각각 월 1회 직접 사용해 볼 수 있습니다.",
+    "FLEX부터 채널 연결과 종량제 실행을 열고, 상위 플랜으로 갈수록 채널 수와 자동화 범위를 단계적으로 넓힙니다.",
+    "시스템은 서버에서 회원·Workspace·플랜·월 사용량을 확인하며 브라우저 저장값만으로 권한을 부여하지 않습니다.",
     "시스템은 실제 사용량을 기준으로 가장 경제적인 플랜을 추천하며 자동으로 상향하지 않습니다.",
-    "플랜을 낮추거나 구독을 중단해도 계정과 콘텐츠·연결 자산의 보존을 우선합니다. 자동 실행만 중지하는 구조를 기본으로 합니다."
+    "플랜을 낮추거나 구독을 중단해도 계정과 콘텐츠·연결 자산의 보존을 우선하고 자동 실행만 중지하는 구조를 기본으로 합니다."
   ],
   "freeLimits": {
     "period": "month",
-    "caption": 10,
-    "post": 5,
-    "shorts": 3
+    "caption": 1,
+    "post": 1,
+    "shorts": 1
   },
   "channelCatalog": [
     "Instagram",
@@ -40,13 +40,13 @@
       "id": "metered",
       "label": "종량제",
       "headline": "쓴 만큼만",
-      "description": "월 기본료 없이 실제 사용한 기능과 실행 건수만 계산합니다."
+      "description": "FLEX부터 월 기본료 없이 실제 사용한 기능과 실행 건수만 계산합니다."
     },
     {
       "id": "automation",
       "label": "자동화 플랜",
       "headline": "많이 맡길수록 효율적으로",
-      "description": "반복 운영이 필요한 개인·브랜드·기관·단체는 낮은 단가와 예약·반복·상시 자동화를 함께 사용할 수 있습니다."
+      "description": "PLUS는 예약, PRO는 반복·분석, AUTO는 상시 자동화까지 단계적으로 확장합니다."
     }
   ],
   "actions": [
@@ -93,7 +93,7 @@
       "basePrice": 300,
       "defaultQty": 12,
       "maxQty": 500,
-      "availability": "planned"
+      "availability": "connector"
     },
     {
       "id": "scheduled_publish",
@@ -102,7 +102,7 @@
       "basePrice": 500,
       "defaultQty": 4,
       "maxQty": 300,
-      "availability": "planned"
+      "availability": "connector"
     },
     {
       "id": "analysis",
@@ -111,7 +111,7 @@
       "basePrice": 2000,
       "defaultQty": 1,
       "maxQty": 31,
-      "availability": "planned"
+      "availability": "connector"
     },
     {
       "id": "review_reply",
@@ -132,8 +132,8 @@
       "unitMultiplier": null,
       "includedCredit": 0,
       "automationDepth": 0,
-      "summary": "직접 만들어 보고 판단",
-      "benefits": ["문구 월 10회·게시글 5회·쇼츠 3회 체험", "개인별 추천 채널 목록 표시", "채널 연결·게시·자동화는 비활성", "유료 플랜 강제 없음"],
+      "summary": "Google 회원으로 먼저 직접 체험",
+      "benefits": ["문구 월 1회·게시글 월 1회·쇼츠 월 1회", "개인별 추천 채널 목록 표시", "채널 연결·게시·자동화 비활성", "서버 기준 월 사용량 관리"],
       "entitlements": {
         "connectedChannels": 0,
         "directPublish": false,
@@ -151,8 +151,8 @@
       "unitMultiplier": 1,
       "includedCredit": 0,
       "automationDepth": 1,
-      "summary": "가끔 필요할 때 1회 실행",
-      "benefits": ["월 기본료 0원", "채널 1개 연결", "콘텐츠 생성·1회 게시를 종량제로 선택", "반복 자동화 없음"],
+      "summary": "채널 1개와 필요한 만큼 종량제",
+      "benefits": ["월 기본료 0원", "채널 1개 연결", "콘텐츠 생성·1회 게시 종량제", "반복 자동화 없음"],
       "entitlements": {
         "connectedChannels": 1,
         "directPublish": true,
@@ -170,10 +170,10 @@
       "unitMultiplier": 0.78,
       "includedCredit": 5000,
       "automationDepth": 2,
-      "summary": "매주 꾸준히 예약 운영",
-      "benefits": ["기본 단가 대비 22% 절감", "채널 2개 연결", "예약 게시 지원", "월 5,000원 상당 기본사용량"],
+      "summary": "채널 3개와 예약 운영",
+      "benefits": ["기본 단가 대비 22% 절감", "채널 3개 연결", "예약 게시 지원", "월 5,000원 상당 기본사용량"],
       "entitlements": {
-        "connectedChannels": 2,
+        "connectedChannels": 3,
         "directPublish": true,
         "scheduledPublish": true,
         "recurringAutomation": false,
@@ -189,7 +189,7 @@
       "unitMultiplier": 0.58,
       "includedCredit": 20000,
       "automationDepth": 3,
-      "summary": "다채널 반복 운영과 분석",
+      "summary": "채널 5개 반복 운영과 분석",
       "benefits": ["기본 단가 대비 42% 절감", "채널 5개 연결", "반복 자동화·성과 분석", "월 20,000원 상당 기본사용량"],
       "entitlements": {
         "connectedChannels": 5,
@@ -208,7 +208,7 @@
       "unitMultiplier": 0.42,
       "includedCredit": 40000,
       "automationDepth": 4,
-      "summary": "승인 규칙 안에서 상시 자동화",
+      "summary": "채널 10개와 상시 자동화",
       "benefits": ["기본 단가 대비 58% 절감", "채널 10개 연결", "기획→생성→예약→분석 상시 자동화", "월 40,000원 상당 기본사용량"],
       "entitlements": {
         "connectedChannels": 10,
@@ -224,27 +224,27 @@
     {
       "id": "once",
       "label": "이번 한 번만",
-      "description": "FLEX부터 사용자가 선택한 콘텐츠를 연결 채널에 1회 게시"
+      "description": "FLEX부터 연결 채널 1개에 1회 실행"
     },
     {
       "id": "scheduled",
       "label": "예약 실행",
-      "description": "PLUS부터 지정한 날짜와 시간에 한 번 실행"
+      "description": "PLUS부터 지정 날짜와 시간에 실행"
     },
     {
       "id": "recurring",
       "label": "기간 반복",
-      "description": "PRO부터 매주·매월 등 정한 기간 동안 반복"
+      "description": "PRO부터 정한 주기로 반복하고 성과를 분석"
     },
     {
       "id": "always_on",
       "label": "상시 자동화",
-      "description": "AUTO에서 예산·승인 규칙 안에서 기획부터 성과 분석까지 연결"
+      "description": "AUTO에서 예산·승인 규칙 안에서 기획부터 분석까지 상시 연결"
     }
   ],
   "payment": {
     "hub": "https://pay.ekodi.kr/",
     "liveCheckout": false,
-    "notice": "현재는 요금 구조 베타 미리보기입니다. 실제 결제는 최종 요금과 결제 흐름 검수 후 활성화하며, 결제 전에 금액과 조건을 다시 확인합니다."
+    "notice": "플랜 권한은 실제 서버 런타임과 연결합니다. 외부 소셜 게시·예약·분석은 각 플랫폼 공식 OAuth 연결이 완료된 채널에서만 실행됩니다."
   }
 }
