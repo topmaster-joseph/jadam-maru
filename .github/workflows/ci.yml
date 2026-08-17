@@ -64,8 +64,10 @@ jobs:
           grep -Fq 'https://marketing-api.ekodi.kr' "$hub"
           grep -Fq '/api/marketing/domains' "$hub"
 
-          # Public hub is audience-neutral and login-first.
-          grep -Fq '나와 우리를 위한 마케팅,<br>필요한 만큼 자유롭게.' "$hub"
+          # Public hub is audience-neutral, simple and Google-login-first.
+          grep -Fq '알리는 일은 더 간단하게.<br><span>선택은 끝까지 내 손에.</span>' "$hub"
+          grep -Fq 'class="public-entry-card"' "$hub"
+          grep -Fq 'Google로 시작하면 바로 FREE 회원이 됩니다.' "$hub"
           grep -Fq 'id="trialType"' "$hub"
           grep -Fq 'id="trialSubject"' "$hub"
           grep -Fq '개인·크리에이터' "$hub"
@@ -83,6 +85,7 @@ jobs:
           grep -Fq 'body:not(.member-session-mode) .product-preview{display:none!important}' "$hub"
           grep -Fq 'body:not(.member-session-mode) .hero.hero-v2{display:block' "$hub"
           grep -Fq 'body:not(.member-session-mode) .member-preview{max-width:820px' "$hub"
+          grep -Fq 'body:not(.member-session-mode) .member-preview,' "$hub"
 
           # FREE sees channels but cannot connect them, has limited content tools,
           # and does not get a misleading performance dashboard before real data exists.
@@ -112,6 +115,19 @@ jobs:
           grep -Fq 'body.member-session-mode.member-workspace-ready .bottom-cta' "$hub"
           grep -Fq "workspaceLink.textContent=member?'작업공간':'무료 체험'" "$hub"
           grep -Fq "pricingLink.textContent=member?'플랜·자동화':'이용 방식'" "$hub"
+
+          # Membership is FREE by default and the workspace progressively unlocks by paid tier.
+          grep -Fq 'data-tiered-entry-experience' "$hub"
+          grep -Fq 'id="tierShell"' "$hub"
+          grep -Fq 'id="tierRail"' "$hub"
+          grep -Fq "selected?.plan||'free'" "$hub"
+          if grep -Fq "d.plan||'pro'" "$hub"; then
+            echo 'Missing membership plan must never default to PRO'
+            exit 1
+          fi
+          for tier in free flex plus pro auto; do
+            grep -Fq "tier-$tier" "$hub"
+          done
 
           grep -Fq 'id="pricing"' "$hub"
           grep -Fq 'id="usageEstimator"' "$hub"
