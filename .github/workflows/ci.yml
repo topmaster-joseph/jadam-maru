@@ -120,7 +120,7 @@ jobs:
           grep -Fq 'data-tiered-entry-experience' "$hub"
           grep -Fq 'id="tierShell"' "$hub"
           grep -Fq 'id="tierRail"' "$hub"
-          grep -Fq "String(d.plan||'free')" "$hub"
+          grep -Fq "selected?.plan||'free'" "$hub"
           if grep -Fq "d.plan||'pro'" "$hub"; then
             echo 'Missing membership plan must never default to PRO'
             exit 1
