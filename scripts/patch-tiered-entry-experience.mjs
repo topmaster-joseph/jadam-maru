@@ -33,6 +33,9 @@ html = html
 if (html.includes("d.plan||'pro'") || html.includes("d.plan || 'pro'")) {
   throw new Error('Unsafe paid-plan fallback survived Google membership bootstrap');
 }
+if (!html.includes("selected?.plan||'free'") && !html.includes("d.plan||'free'") && !html.includes("d.plan || 'free'")) {
+  throw new Error('Google membership bootstrap must default to FREE when no plan is assigned');
+}
 
 // Do not let an old browser marker masquerade as a current Google session.
 html = html.replace(
@@ -161,7 +164,7 @@ for (const required of [
   'id="tierRail"',
   'class="public-entry-card"',
   'Google로 무료 시작',
-  "String(d.plan||'free')",
+  "selected?.plan||'free'",
   'tier-free',
   'tier-flex',
   'tier-plus',
