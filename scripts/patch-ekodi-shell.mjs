@@ -24,7 +24,7 @@ function patchCsp(html){
 
 function patchHtml(html){
   let next=patchCsp(html);
-  if(!next.includes('data-ekodi-shell="v1"'))next=next.replace('</head>',`<meta name="ekodi-shell" content="v1" data-ekodi-shell="v1"><script src="${shellScript}" data-ekodi-service="marketing"></script></head>`);
+  if(!next.includes('data-ekodi-shell="v1"'))next=next.replace('</head>',`<meta name="ekodi-shell" content="v1" data-ekodi-shell="v1"><script defer src="${shellScript}" data-ekodi-service="marketing"></script></head>`);
   return next;
 }
 
@@ -46,4 +46,4 @@ for(const file of files){
   if(cspMeta&&(!cspMeta.includes(shellOrigin)||!cspMeta.includes('script-src')||!cspMeta.includes('connect-src')))throw new Error(`Shell CSP extension failed: ${file}`);
   fs.writeFileSync(file,after);
 }
-console.log(`✅ EKODI shared Shell injected into ${files.length} Marketing AI page(s).`);
+console.log(`✅ EKODI shared Shell injected into ${files.length} Marketing AI page(s) without blocking first paint.`);
