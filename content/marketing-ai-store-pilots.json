@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "mode": "pre-pilot",
+  "principle": "AI가 먼저 조사·판단·계획하고 사용자는 확인·승인한다.",
+  "loop": ["RESEARCH", "PREPARE", "APPROVE", "EXECUTE", "MEASURE", "LEARN"],
+  "governance": {
+    "profileOwnerReviewRequired": true,
+    "weeklyPlanApprovalRequired": true,
+    "contentGenerationRequiresPlanApproval": true,
+    "finalContentApprovalRequired": true,
+    "publishOnlyToOfficiallyAuthorizedChannels": true,
+    "externalAutoPublishEnabledDuringPrePilot": false,
+    "performanceCollection": "connected-channel metrics first; owner-entered conversion results allowed"
+  },
+  "cases": [
+    {
+      "slug": "jadam",
+      "storeName": "자담치킨 목포대점",
+      "aiRole": "배달·저녁매출 중심 AI 마케팅 직원",
+      "mission": "대학가의 요일·시간대별 수요를 읽고 주문·포장·재주문으로 이어지는 마케팅을 먼저 준비한다.",
+      "primaryGoals": ["저녁 주문", "포장 전환", "재주문", "비수시간 수요"],
+      "profile": {
+        "status": "점주 확인 필요",
+        "confidence": "사전조사 전",
+        "researchPriority": ["공식 매장정보", "배달플랫폼 공개정보", "지도·플레이스", "매장 공식채널", "공식 기관·단체 등록정보"],
+        "ownerInputPolicy": "AI가 찾지 못했거나 상충하는 항목만 점주가 입력·수정"
+      },
+      "channels": [
+        {"type":"자체 사이트","status":"발견","address":"https://jadam.ekodi.kr/","connected":"연결","auth":"해당 없음","capabilities":"정보·콘텐츠 랜딩","lastChecked":"빌드 시 확인"},
+        {"type":"네이버 플레이스","status":"자동조사 대기","address":"미확인","connected":"미연결","auth":"미승인","capabilities":"정보·성과·게시 권한 확인 필요","lastChecked":"—"},
+        {"type":"카카오맵/채널","status":"자동조사 대기","address":"미확인","connected":"미연결","auth":"미승인","capabilities":"정보·메시지 권한 확인 필요","lastChecked":"—"},
+        {"type":"Instagram","status":"자동조사 대기","address":"미확인","connected":"미연결","auth":"미승인","capabilities":"게시·성과 권한 확인 필요","lastChecked":"—"},
+        {"type":"YouTube","status":"자동조사 대기","address":"미확인","connected":"미연결","auth":"미승인","capabilities":"Shorts 게시·성과 권한 확인 필요","lastChecked":"—"},
+        {"type":"배달플랫폼","status":"자동조사 대기","address":"미확인","connected":"조회/연동 미확정","auth":"공식 API·점주 권한 필요","capabilities":"공개정보 우선, 주문·매출 통계는 공식 권한만","lastChecked":"—"}
+      ],
+      "weeklyPlan": [
+        {"slot":"평일 16:30","goal":"저녁 주문 예열","action":"대학생·직장인 저녁 메뉴 제안과 포장 CTA 준비","status":"초안"},
+        {"slot":"목·금 17:30","goal":"피크 전환","action":"주력메뉴 중심 이미지·짧은 카피·숏폼 패키지 준비","status":"초안"},
+        {"slot":"토요일 17:00","goal":"2인 이상 주문","action":"친구·가족 상황형 메시지와 세트 제안 테스트","status":"초안"},
+        {"slot":"주간 마감","goal":"학습","action":"채널별 반응·문의·주문 확인값을 비교해 다음 주 우선순위 제안","status":"초안"}
+      ],
+      "kpis": ["AI 제안 채택률", "콘텐츠 제작시간", "발행 성공률", "문의·전화", "주문·포장 전환", "재주문", "점주 만족도"]
+    },
+    {
+      "slug": "pizzamaru",
+      "storeName": "피자마루 목포대점",
+      "aiRole": "세트·객단가 중심 AI 마케팅 직원",
+      "mission": "고객 상황에 맞는 메뉴 조합과 메시지를 실험해 주문 전환과 객단가를 높이는 마케팅을 준비한다.",
+      "primaryGoals": ["세트 주문", "사이드 추가", "객단가", "재구매"],
+      "profile": {
+        "status": "점주 확인 필요",
+        "confidence": "사전조사 전",
+        "researchPriority": ["공식 매장정보", "배달플랫폼 공개정보", "지도·플레이스", "매장 공식채널", "공식 기관·단체 등록정보"],
+        "ownerInputPolicy": "AI가 찾지 못했거나 상충하는 항목만 점주가 입력·수정"
+      },
+      "channels": [
+        {"type":"자체 사이트","status":"발견","address":"https://pizzamaru.ekodi.kr/","connected":"연결","auth":"해당 없음","capabilities":"정보·콘텐츠 랜딩","lastChecked":"빌드 시 확인"},
+        {"type":"네이버 플레이스","status":"자동조사 대기","address":"미확인","connected":"미연결","auth":"미승인","capabilities":"정보·성과·게시 권한 확인 필요","lastChecked":"—"},
+        {"type":"카카오맵/채널","status":"자동조사 대기","address":"미확인","connected":"미연결","auth":"미승인","capabilities":"정보·메시지 권한 확인 필요","lastChecked":"—"},
+        {"type":"Instagram","status":"자동조사 대기","address":"미확인","connected":"미연결","auth":"미승인","capabilities":"게시·성과 권한 확인 필요","lastChecked":"—"},
+        {"type":"YouTube","status":"자동조사 대기","address":"미확인","connected":"미연결","auth":"미승인","capabilities":"Shorts 게시·성과 권한 확인 필요","lastChecked":"—"},
+        {"type":"배달플랫폼","status":"자동조사 대기","address":"미확인","connected":"조회/연동 미확정","auth":"공식 API·점주 권한 필요","capabilities":"공개정보 우선, 주문·매출 통계는 공식 권한만","lastChecked":"—"}
+      ],
+      "weeklyPlan": [
+        {"slot":"화요일","goal":"메시지 학습","action":"가격혜택형과 메뉴매력형 문구 A/B 초안을 준비","status":"초안"},
+        {"slot":"목요일 17:00","goal":"2~3인 주문","action":"피자+사이드 추천 조합과 상황형 콘텐츠 준비","status":"초안"},
+        {"slot":"금요일 18:00","goal":"객단가","action":"주력 피자와 추가메뉴 조합을 채널별 형식으로 준비","status":"초안"},
+        {"slot":"주간 마감","goal":"학습","action":"조합별 반응과 실제 주문 확인값을 비교해 다음 조합 추천","status":"초안"}
+      ],
+      "kpis": ["AI 제안 채택률", "세트 콘텐츠 반응", "사이드 추가", "객단가 변화", "주문 전환", "재구매", "점주 만족도"]
+    },
+    {
+      "slug": "yogurtpurple",
+      "storeName": "요거트퍼플 목포대점",
+      "aiRole": "비주얼·SNS 중심 AI 마케팅 직원",
+      "mission": "제품 비주얼과 대학가 고객 맥락을 결합해 숏폼·SNS 반응을 실제 방문과 구매로 연결한다.",
+      "primaryGoals": ["SNS 반응", "방문", "신규고객", "재방문"],
+      "profile": {
+        "status": "점주 확인 필요",
+        "confidence": "사전조사 전",
+        "researchPriority": ["공식 매장정보", "배달·예약플랫폼 공개정보", "지도·플레이스", "매장 공식채널", "공식 기관·단체 등록정보"],
+        "ownerInputPolicy": "AI가 찾지 못했거나 상충하는 항목만 점주가 입력·수정"
+      },
+      "channels": [
+        {"type":"자체 사이트","status":"발견","address":"https://yogurt.ekodi.kr/","connected":"연결","auth":"해당 없음","capabilities":"정보·콘텐츠 랜딩","lastChecked":"빌드 시 확인"},
+        {"type":"네이버 플레이스","status":"자동조사 대기","address":"미확인","connected":"미연결","auth":"미승인","capabilities":"정보·성과·게시 권한 확인 필요","lastChecked":"—"},
+        {"type":"카카오맵/채널","status":"자동조사 대기","address":"미확인","connected":"미연결","auth":"미승인","capabilities":"정보·메시지 권한 확인 필요","lastChecked":"—"},
+        {"type":"Instagram","status":"자동조사 대기","address":"미확인","connected":"미연결","auth":"미승인","capabilities":"게시·성과 권한 확인 필요","lastChecked":"—"},
+        {"type":"YouTube","status":"자동조사 대기","address":"미확인","connected":"미연결","auth":"미승인","capabilities":"Shorts 게시·성과 권한 확인 필요","lastChecked":"—"},
+        {"type":"배달/예약플랫폼","status":"자동조사 대기","address":"미확인","connected":"조회/연동 미확정","auth":"공식 API·점주 권한 필요","capabilities":"공개정보 우선, 내부 통계는 공식 권한만","lastChecked":"—"}
+      ],
+      "weeklyPlan": [
+        {"slot":"화요일","goal":"비주얼 학습","action":"제품중심·건강이미지·감성형 3개 크리에이티브 방향 준비","status":"초안"},
+        {"slot":"목요일 15:00","goal":"대학가 간식 수요","action":"수업 사이 간식·가벼운 식사 맥락의 이미지/카피 준비","status":"초안"},
+        {"slot":"금요일 16:00","goal":"신규 도달","action":"15~30초 숏폼 콘티와 채널별 설명문 준비","status":"초안"},
+        {"slot":"주간 마감","goal":"학습","action":"비주얼 유형별 저장·반응·방문 확인값을 비교해 다음 주 소재 추천","status":"초안"}
+      ],
+      "kpis": ["AI 제안 채택률", "숏폼 완주·반응", "저장·공유", "방문·쿠폰", "신규고객", "재방문", "점주 만족도"]
+    }
+  ]
+}
