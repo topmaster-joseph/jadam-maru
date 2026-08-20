@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "operator": {
+    "displayName": "자담&마루 운영매장",
+    "relationship": "동일한 운영사업자가 관리하지만 각 매장은 별도의 가게와 메뉴로 운영됩니다.",
+    "contact": "061-453-8295",
+    "contactHref": "tel:0614538295",
+    "operationBase": "전남 무안군 청계면 승달산길 37-1",
+    "hours": "11:00–22:00",
+    "hoursNote": "매장별 휴무·마감시간은 최종 확인"
+  },
+  "stores": [
+    {
+      "slug": "jadam",
+      "brandId": "chicken",
+      "name": "자담치킨 목포대점",
+      "category": "치킨",
+      "emoji": "🍗",
+      "summary": "치킨 주문·포장·배달을 중심으로 운영하는 독립 매장입니다.",
+      "publicSite": "https://jadam.ekodi.kr/",
+      "marketingAi": "https://jadam.ai.ekodi.kr/"
+    },
+    {
+      "slug": "pizzamaru",
+      "brandId": "pizza",
+      "name": "피자마루 목포대점",
+      "category": "피자",
+      "emoji": "🍕",
+      "summary": "피자와 사이드 조합을 중심으로 운영하는 독립 매장입니다.",
+      "publicSite": "https://pizzamaru.ekodi.kr/",
+      "marketingAi": "https://pizzamaru.ai.ekodi.kr/"
+    },
+    {
+      "slug": "yogurtpurple",
+      "brandId": "yogurt",
+      "name": "요거트퍼플 목포대점",
+      "category": "요거트·디저트",
+      "emoji": "🍨",
+      "summary": "요거트와 디저트 메뉴를 중심으로 운영하는 독립 매장입니다.",
+      "publicSite": "https://yogurt.ekodi.kr/",
+      "marketingAi": "https://yogurt.ai.ekodi.kr/"
+    }
+  ]
+}
