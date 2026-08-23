@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  issues: write
 
 concurrency:
   group: marketing-ai-production-smoke
@@ -27,3 +28,13 @@ jobs:
           GITHUB_SHA: ${{ github.sha }}
           EKODI_SMOKE_ROUNDS: '20'
           EKODI_SMOKE_DELAY_MS: '10000'
+      - name: Record production success
+        if: success()
+        run: gh issue comment 38 --repo "$GITHUB_REPOSITORY" --body "✅ Production verified · commit \`${GITHUB_SHA::12}\` · Cloudflare Pages + marketing.ekodi.kr + jadam.ai.ekodi.kr + pizzamaru.ai.ekodi.kr + yogurt.ai.ekodi.kr · ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - name: Record production failure
+        if: failure()
+        run: gh issue comment 38 --repo "$GITHUB_REPOSITORY" --body "❌ Production verification failed · commit \`${GITHUB_SHA::12}\` · ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+        env:
+          GH_TOKEN: ${{ github.token }}
