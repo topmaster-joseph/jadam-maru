@@ -17,6 +17,7 @@ function extendDirective(csp,name,value){
 function patchCsp(html){
   return html.replace(/<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi,tag=>tag.replace(/content="([^"]*)"/i,(_,csp)=>{
     let next=extendDirective(csp,'script-src',shellOrigin);
+    next=extendDirective(next,'style-src',shellOrigin);
     next=extendDirective(next,'connect-src',shellOrigin);
     return `content="${next}"`;
   }));
@@ -31,7 +32,8 @@ function markFixedHeader(html){
 function patchHtml(html){
   let next=patchCsp(html);
   next=markFixedHeader(next);
-  if(!next.includes('data-ekodi-shell="v1"'))next=next.replace('</head>',`<meta name="ekodi-shell" content="v1" data-ekodi-shell="v1"><script defer src="${shellScript}" data-ekodi-service="marketing"></script></head>`);
+  if(!next.includes('data-ekodi-shell="v1"'))next=next.replace('</head>',`<meta name="ekodi-shell" content="v1" data-ekodi-shell="v1"><script defer src="${shellScript}" data-ekodi-service="marketing" data-ekodi-surface="public"></script></head>`);
+  else next=next.replace(/(<script\b[^>]*data-ekodi-service=["']marketing["'][^>]*)(>)/i,(all,start,end)=>/data-ekodi-surface=/.test(start)?all:`${start} data-ekodi-surface="public"${end}`);
   return next;
 }
 
@@ -49,9 +51,10 @@ for(const file of files){
   const before=fs.readFileSync(file,'utf8');
   const after=patchHtml(before);
   if(!after.includes(shellScript)||!after.includes('data-ekodi-service="marketing"'))throw new Error(`Shell injection failed: ${file}`);
+  if(!after.includes('data-ekodi-surface="public"'))throw new Error(`Marketing AI public surface marker missing: ${file}`);
   if(!after.includes('data-ekodi-fixed-header'))throw new Error(`Mobile fixed header marker missing: ${file}`);
   const cspMeta=after.match(/<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/i)?.[0]||'';
-  if(cspMeta&&(!cspMeta.includes(shellOrigin)||!cspMeta.includes('script-src')||!cspMeta.includes('connect-src')))throw new Error(`Shell CSP extension failed: ${file}`);
+  if(cspMeta&&(!cspMeta.includes(shellOrigin)||!cspMeta.includes('script-src')||!cspMeta.includes('style-src')||!cspMeta.includes('connect-src')))throw new Error(`Shell CSP extension failed: ${file}`);
   fs.writeFileSync(file,after);
 }
-console.log(`✅ EKODI shared Shell and mobile fixed-header marker injected into ${files.length} Marketing AI page(s) without blocking first paint.`);
+console.log(`✅ EKODI shared Shell injected with explicit public surface; authenticated sessions may promote to stable workspace UI.`);
