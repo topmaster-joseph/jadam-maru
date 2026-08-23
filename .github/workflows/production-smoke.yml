@@ -1,4 +1,4 @@
-name: Production Smoke
+name: Production Deploy + Smoke
 
 on:
   push:
@@ -10,31 +10,49 @@ permissions:
   issues: write
 
 concurrency:
-  group: marketing-ai-production-smoke
+  group: marketing-ai-production
   cancel-in-progress: true
 
 jobs:
-  verify-production:
+  deploy-and-verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: '24'
-      - name: Verify exact commit on Cloudflare Pages and canonical domains
+      - name: Build exact production bundle
+        run: npm run build
+        env:
+          CF_PAGES_COMMIT_SHA: ${{ github.sha }}
+      - name: Verify Cloudflare deploy credentials
+        shell: bash
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || secrets.CF_ACCOUNT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo 'Cloudflare API token secret is not configured.'; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo 'Cloudflare account ID secret is not configured.'; exit 1; }
+      - name: Deploy dist to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || secrets.CF_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID || secrets.CF_ACCOUNT_ID }}
+        run: npx --yes wrangler@4 pages deploy dist --project-name=jadam-maru --branch=main
+      - name: Verify exact commit on Pages and canonical domains
         run: node scripts/verify-production-deployment.mjs
         env:
           GITHUB_SHA: ${{ github.sha }}
-          EKODI_SMOKE_ROUNDS: '20'
+          EKODI_SMOKE_ROUNDS: '24'
           EKODI_SMOKE_DELAY_MS: '10000'
       - name: Record production success
         if: success()
-        run: gh issue comment 38 --repo "$GITHUB_REPOSITORY" --body "✅ Production verified · commit \`${GITHUB_SHA::12}\` · Cloudflare Pages + marketing.ekodi.kr + jadam.ai.ekodi.kr + pizzamaru.ai.ekodi.kr + yogurt.ai.ekodi.kr · ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+        run: gh issue comment 38 --repo "$GITHUB_REPOSITORY" --body "✅ Production deployed and verified · commit \`${GITHUB_SHA::12}\` · Cloudflare Pages + marketing.ekodi.kr + jadam.ai.ekodi.kr + pizzamaru.ai.ekodi.kr + yogurt.ai.ekodi.kr · ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
         env:
           GH_TOKEN: ${{ github.token }}
       - name: Record production failure
         if: failure()
-        run: gh issue comment 38 --repo "$GITHUB_REPOSITORY" --body "❌ Production verification failed · commit \`${GITHUB_SHA::12}\` · ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+        run: gh issue comment 38 --repo "$GITHUB_REPOSITORY" --body "❌ Production deploy/verification failed · commit \`${GITHUB_SHA::12}\` · ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
         env:
           GH_TOKEN: ${{ github.token }}
