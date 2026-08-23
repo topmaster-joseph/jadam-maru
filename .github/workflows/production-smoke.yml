@@ -1,0 +1,29 @@
+name: Production Smoke
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: marketing-ai-production-smoke
+  cancel-in-progress: true
+
+jobs:
+  verify-production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+      - name: Verify exact commit on Cloudflare Pages and canonical domains
+        run: node scripts/verify-production-deployment.mjs
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+          EKODI_SMOKE_ROUNDS: '20'
+          EKODI_SMOKE_DELAY_MS: '10000'
