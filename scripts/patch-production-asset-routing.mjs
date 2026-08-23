@@ -5,6 +5,8 @@ const root = process.cwd();
 const output = path.join(root, 'dist', 'marketing-ai');
 const pagesOrigin = 'https://jadam-maru.pages.dev';
 const pagesBase = `${pagesOrigin}/marketing-ai`;
+const sourceSha = String(process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || process.env.SOURCE_VERSION || 'local').trim();
+const buildSha = sourceSha === 'local' ? 'local' : sourceSha.slice(0, 12);
 const targets = [
   { slug: '', dir: output, ui: 'USER UI' },
   { slug: 'jadam', dir: path.join(output, 'jadam'), ui: 'ADMIN UI' },
@@ -32,6 +34,12 @@ function ensureCspSource(html, directive, source) {
   );
 }
 
+function stampBuild(html) {
+  const marker = `<meta name="ekodi-build-sha" content="${buildSha}" data-ekodi-build-sha="${buildSha}">`;
+  const clean = html.replace(/<meta\b[^>]*data-ekodi-build-sha=["'][^"']+["'][^>]*>/gi, '');
+  return clean.replace('</head>', `${marker}</head>`);
+}
+
 function rewriteHtml(html, slug) {
   const base = assetBase(slug);
   let next = html;
@@ -41,7 +49,7 @@ function rewriteHtml(html, slug) {
   next = next.replace(/src=["']\/official-ui\.js(\?[^"']*)?["']/g, (_, q = '') => `src="${base}/official-ui.js${q}"`);
   next = ensureCspSource(next, 'style-src', pagesOrigin);
   next = ensureCspSource(next, 'script-src', pagesOrigin);
-  return next;
+  return stampBuild(next);
 }
 
 function rewriteShellBridge(file, slug) {
@@ -63,6 +71,9 @@ for (const target of targets) {
   if (!html.includes(`data-ekodi-ui-classification="${target.ui}"`)) {
     throw new Error(`${target.slug || 'hub'}: official ${target.ui} classification missing`);
   }
+  if (!html.includes(`data-ekodi-build-sha="${buildSha}"`)) {
+    throw new Error(`${target.slug || 'hub'}: build SHA marker missing`);
+  }
   if (!html.includes(`${assetBase(target.slug)}/official-ui.css`)) {
     throw new Error(`${target.slug || 'hub'}: official UI stylesheet is not pinned to the production asset origin`);
   }
@@ -81,4 +92,4 @@ for (const target of targets) {
   }
 }
 
-console.log('✅ Marketing AI generated UI assets pinned to canonical Cloudflare Pages paths; custom-domain host rewrites can no longer drop tenant CSS/JS.');
+console.log(`✅ Marketing AI generated UI assets pinned to canonical Cloudflare Pages paths with build marker ${buildSha}.`);

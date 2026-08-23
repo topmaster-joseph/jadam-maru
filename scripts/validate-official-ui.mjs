@@ -29,6 +29,7 @@ for (const target of targets) {
     'data-ekodi-ui-governance="official"',
     'data-ekodi-ui-governance-runtime="official"',
     'data-ekodi-surface="public"',
+    'data-ekodi-build-sha=',
     `${base}/official-ui.css`,
     `${base}/official-ui.js`,
   ]) {
@@ -61,4 +62,4 @@ for (const target of targets) {
   }
 }
 
-console.log('✅ Official EKODI USER UI / ADMIN UI governance, AI roles, mobile behavior and production asset routing verified.');
+console.log('✅ Official EKODI USER UI / ADMIN UI governance, AI roles, mobile behavior, build markers and production asset routing verified.');
