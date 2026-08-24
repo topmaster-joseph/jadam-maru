@@ -1,19 +1,22 @@
-const expectedFull = String(process.env.GITHUB_SHA || process.env.CF_PAGES_COMMIT_SHA || '').trim();
+const expectedFull = String(process.env.SOURCE_VERSION || process.env.GITHUB_SHA || process.env.CF_PAGES_COMMIT_SHA || '').trim();
 const expected = expectedFull.slice(0, 12);
 const maxRounds = Number(process.env.EKODI_SMOKE_ROUNDS || 30);
 const delayMs = Number(process.env.EKODI_SMOKE_DELAY_MS || 12000);
 
-if (!expected) throw new Error('GITHUB_SHA or CF_PAGES_COMMIT_SHA is required for production verification');
+if (!expected) throw new Error('SOURCE_VERSION, GITHUB_SHA or CF_PAGES_COMMIT_SHA is required for production verification');
 
 const targets = [
-  { name: 'Pages hub', url: 'https://jadam-maru.pages.dev/marketing-ai/', ui: 'USER UI', admin: false },
-  { name: 'Pages jadam', url: 'https://jadam-maru.pages.dev/marketing-ai/jadam/', ui: 'ADMIN UI', admin: true },
-  { name: 'Pages pizzamaru', url: 'https://jadam-maru.pages.dev/marketing-ai/pizzamaru/', ui: 'ADMIN UI', admin: true },
-  { name: 'Pages yogurt', url: 'https://jadam-maru.pages.dev/marketing-ai/yogurtpurple/', ui: 'ADMIN UI', admin: true },
+  { name: 'Pages hub', url: 'https://marketing-ai.pages.dev/', ui: 'USER UI', admin: false },
+  { name: 'Pages jadam', url: 'https://marketing-ai-jadam.pages.dev/', ui: 'ADMIN UI', admin: true },
+  { name: 'Pages pizzamaru', url: 'https://marketing-ai-pizzamaru.pages.dev/', ui: 'ADMIN UI', admin: true },
+  { name: 'Pages yogurt', url: 'https://marketing-ai-yogurtpurple.pages.dev/', ui: 'ADMIN UI', admin: true },
   { name: 'Marketing hub', url: 'https://marketing.ekodi.kr/', ui: 'USER UI', admin: false },
-  { name: 'Jadam workspace', url: 'https://jadam.ai.ekodi.kr/', ui: 'ADMIN UI', admin: true },
-  { name: 'Pizzamaru workspace', url: 'https://pizzamaru.ai.ekodi.kr/', ui: 'ADMIN UI', admin: true },
-  { name: 'Yogurt workspace', url: 'https://yogurt.ai.ekodi.kr/', ui: 'ADMIN UI', admin: true },
+  { name: 'Jadam site', url: 'https://jadam.ekodi.kr/', ui: 'ADMIN UI', admin: true },
+  { name: 'Jadam AI', url: 'https://jadam.ai.ekodi.kr/', ui: 'ADMIN UI', admin: true },
+  { name: 'Pizzamaru site', url: 'https://pizzamaru.ekodi.kr/', ui: 'ADMIN UI', admin: true },
+  { name: 'Pizzamaru AI', url: 'https://pizzamaru.ai.ekodi.kr/', ui: 'ADMIN UI', admin: true },
+  { name: 'Yogurt site', url: 'https://yogurt.ekodi.kr/', ui: 'ADMIN UI', admin: true },
+  { name: 'Yogurt AI', url: 'https://yogurt.ai.ekodi.kr/', ui: 'ADMIN UI', admin: true },
 ];
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -30,32 +33,46 @@ async function getText(url) {
     cache: 'no-store',
     headers: {
       'cache-control': 'no-cache',
-      'user-agent': 'EKODI-Production-Smoke/1.0',
+      'user-agent': 'EKODI-Production-Smoke/2.0',
     },
     signal: AbortSignal.timeout(15000),
   });
-  if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
-  return { text: await response.text(), finalUrl: response.url };
+  if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}: ${url}`);
+  return {
+    text: await response.text(),
+    finalUrl: response.url,
+    contentType: String(response.headers.get('content-type') || '').toLowerCase(),
+  };
 }
 
-function extractAsset(html, filename) {
+function extractAssetUrl(html, filename, baseUrl) {
   const pattern = new RegExp(`(?:href|src)=["']([^"']*${filename.replace('.', '\\.')}[^"']*)["']`, 'i');
   const found = html.match(pattern)?.[1];
-  return found ? found.replaceAll('&amp;', '&') : '';
+  if (!found) return '';
+  return new URL(found.replaceAll('&amp;', '&'), baseUrl).href;
 }
 
-async function verifyAsset(url, marker, minLength = 200) {
+async function verifyAsset(url, { marker, minLength = 200, type }) {
   if (!url) throw new Error('asset URL missing');
-  const { text } = await getText(url);
-  if (text.length < minLength) throw new Error(`asset unexpectedly small: ${url}`);
-  if (marker && !text.includes(marker)) throw new Error(`asset marker missing: ${url}`);
+  const resource = await getText(url);
+  if (resource.text.length < minLength) throw new Error(`asset unexpectedly small: ${url}`);
+  if (marker && !resource.text.includes(marker)) throw new Error(`asset marker missing: ${url}`);
+  if (type === 'css' && !resource.contentType.includes('text/css')) {
+    throw new Error(`stylesheet MIME mismatch (${resource.contentType || 'missing'}): ${url}`);
+  }
+  if (type === 'js' && !/(javascript|ecmascript)/.test(resource.contentType)) {
+    throw new Error(`script MIME mismatch (${resource.contentType || 'missing'}): ${url}`);
+  }
 }
 
 async function verifyTarget(target) {
-  const { text: html, finalUrl } = await getText(target.url);
+  const { text: html, finalUrl, contentType } = await getText(target.url);
+  if (!contentType.includes('text/html')) throw new Error(`page MIME mismatch (${contentType || 'missing'}); final=${finalUrl}`);
+
   const required = [
     `data-ekodi-ui-classification="${target.ui}"`,
     `data-ekodi-build-sha="${expected}"`,
+    'data-ekodi-asset-routing="same-origin"',
     'data-ekodi-ui-governance="official"',
     'data-ekodi-ui-governance-runtime="official"',
   ];
@@ -69,18 +86,41 @@ async function verifyTarget(target) {
     throw new Error(`ADMIN context leaked into USER UI; final=${finalUrl}`);
   }
 
-  const officialCss = extractAsset(html, 'official-ui.css');
-  const officialJs = extractAsset(html, 'official-ui.js');
-  await verifyAsset(officialCss, 'EKODI official USER UI / ADMIN UI governance layer', 500);
-  await verifyAsset(officialJs, target.admin ? 'EKODI Admin AI' : 'EKODI User AI', 500);
+  const pageOrigin = new URL(finalUrl).origin;
+  const officialCss = extractAssetUrl(html, 'official-ui.css', finalUrl);
+  const officialJs = extractAssetUrl(html, 'official-ui.js', finalUrl);
+  if (new URL(officialCss).origin !== pageOrigin || new URL(officialJs).origin !== pageOrigin) {
+    throw new Error(`official UI assets escaped deployed origin; final=${finalUrl}`);
+  }
+  await verifyAsset(officialCss, {
+    marker: 'EKODI official USER UI / ADMIN UI governance layer',
+    minLength: 500,
+    type: 'css',
+  });
+  await verifyAsset(officialJs, {
+    marker: target.admin ? 'EKODI Admin AI' : 'EKODI User AI',
+    minLength: 500,
+    type: 'js',
+  });
 
   if (target.admin) {
-    const siteCss = extractAsset(html, 'site.css');
-    const shellJs = extractAsset(html, 'shell-style.js');
-    await verifyAsset(siteCss, '', 1000);
-    await verifyAsset(shellJs, 'data-ekodi-shell-external-style', 400);
+    const siteCss = extractAssetUrl(html, 'site.css', finalUrl);
+    const shellJs = extractAssetUrl(html, 'shell-style.js', finalUrl);
+    if (new URL(siteCss).origin !== pageOrigin || new URL(shellJs).origin !== pageOrigin) {
+      throw new Error(`tenant assets escaped deployed origin; final=${finalUrl}`);
+    }
+    await verifyAsset(siteCss, {
+      marker: 'Generated by scripts/patch-marketing-style-assets.mjs',
+      minLength: 1000,
+      type: 'css',
+    });
+    await verifyAsset(shellJs, {
+      marker: 'data-ekodi-shell-external-style',
+      minLength: 400,
+      type: 'js',
+    });
   }
-  return `${target.name}: ${target.ui} · build ${expected}`;
+  return `${target.name}: ${target.ui} · build ${expected} · same-origin assets`;
 }
 
 let pending = new Map(targets.map(target => [target.name, { target, error: 'not checked' }]));
@@ -116,4 +156,4 @@ if (pending.size) {
   throw new Error(`Production deployment did not converge to ${expected} within the verification window:\n${details}`);
 }
 
-console.log(`✅ Production verified end-to-end on Pages and all canonical Marketing AI domains for commit ${expected}.`);
+console.log(`✅ Production verified end-to-end on four Pages projects and seven canonical Marketing AI domains for commit ${expected}.`);
