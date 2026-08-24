@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const root = process.cwd();
 const output = path.join(root, 'dist', 'marketing-ai');
-const sourceSha = String(process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || process.env.SOURCE_VERSION || 'local').trim();
+const sourceSha = String(process.env.SOURCE_VERSION || process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || 'local').trim();
 const buildSha = sourceSha === 'local' ? 'local' : sourceSha.slice(0, 12);
 const targets = [
   { slug: '', dir: output, ui: 'USER UI' },
