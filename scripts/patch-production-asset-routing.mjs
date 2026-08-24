@@ -3,8 +3,6 @@ import path from 'node:path';
 
 const root = process.cwd();
 const output = path.join(root, 'dist', 'marketing-ai');
-const pagesOrigin = 'https://jadam-maru.pages.dev';
-const pagesBase = `${pagesOrigin}/marketing-ai`;
 const sourceSha = String(process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || process.env.SOURCE_VERSION || 'local').trim();
 const buildSha = sourceSha === 'local' ? 'local' : sourceSha.slice(0, 12);
 const targets = [
@@ -14,17 +12,13 @@ const targets = [
   { slug: 'yogurtpurple', dir: path.join(output, 'yogurtpurple'), ui: 'ADMIN UI' },
 ];
 
-function assetBase(slug) {
-  return slug ? `${pagesBase}/${slug}` : pagesBase;
-}
-
 function ensureCspSource(html, directive, source) {
   return html.replace(/<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/i, tag =>
     tag.replace(/content="([^"]*)"/i, (_, csp) => {
       const parts = String(csp).split(';').map(part => part.trim()).filter(Boolean);
       const index = parts.findIndex(part => part === directive || part.startsWith(`${directive} `));
       if (index < 0) {
-        parts.push(`${directive} 'self' ${source}`);
+        parts.push(`${directive} ${source}`);
       } else {
         const tokens = parts[index].split(/\s+/);
         if (!tokens.includes(source)) parts[index] += ` ${source}`;
@@ -35,61 +29,61 @@ function ensureCspSource(html, directive, source) {
 }
 
 function stampBuild(html) {
-  const marker = `<meta name="ekodi-build-sha" content="${buildSha}" data-ekodi-build-sha="${buildSha}">`;
-  const clean = html.replace(/<meta\b[^>]*data-ekodi-build-sha=["'][^"']+["'][^>]*>/gi, '');
-  return clean.replace('</head>', `${marker}</head>`);
+  const buildMarker = `<meta name="ekodi-build-sha" content="${buildSha}" data-ekodi-build-sha="${buildSha}">`;
+  const routingMarker = '<meta name="ekodi-asset-routing" content="same-origin" data-ekodi-asset-routing="same-origin">';
+  let clean = html.replace(/<meta\b[^>]*data-ekodi-build-sha=["'][^"']+["'][^>]*>/gi, '');
+  clean = clean.replace(/<meta\b[^>]*data-ekodi-asset-routing=["'][^"']+["'][^>]*>/gi, '');
+  return clean.replace('</head>', `${buildMarker}${routingMarker}</head>`);
 }
 
-function rewriteHtml(html, slug) {
-  const base = assetBase(slug);
+function versionOfficialAssets(html) {
   let next = html;
-  next = next.replace(/href=["']\/site\.css(\?[^"']*)?["']/g, (_, q = '') => `href="${base}/site.css${q}"`);
-  next = next.replace(/src=["']\/shell-style\.js(\?[^"']*)?["']/g, (_, q = '') => `src="${base}/shell-style.js${q}"`);
-  next = next.replace(/href=["']\/official-ui\.css(\?[^"']*)?["']/g, (_, q = '') => `href="${base}/official-ui.css${q}"`);
-  next = next.replace(/src=["']\/official-ui\.js(\?[^"']*)?["']/g, (_, q = '') => `src="${base}/official-ui.js${q}"`);
-  next = ensureCspSource(next, 'style-src', pagesOrigin);
-  next = ensureCspSource(next, 'script-src', pagesOrigin);
-  return stampBuild(next);
-}
-
-function rewriteShellBridge(file, slug) {
-  if (!fs.existsSync(file)) return;
-  const base = assetBase(slug);
-  const before = fs.readFileSync(file, 'utf8');
-  const after = before.replace(/(["'])\/shell\.css(\?[^"']*)?\1/g, (_, _quote, q = '') => JSON.stringify(`${base}/shell.css${q}`));
-  fs.writeFileSync(file, after);
-  if (!after.includes(`${base}/shell.css`)) throw new Error(`${slug}: shell.css production route missing`);
+  next = next.replace(/href=["']\/official-ui\.css(?:\?[^"']*)?["']/g, `href="/official-ui.css?v=${buildSha}"`);
+  next = next.replace(/src=["']\/official-ui\.js(?:\?[^"']*)?["']/g, `src="/official-ui.js?v=${buildSha}"`);
+  return next;
 }
 
 for (const target of targets) {
   const htmlFile = path.join(target.dir, 'index.html');
   if (!fs.existsSync(htmlFile)) throw new Error(`Production asset target missing: ${htmlFile}`);
+
   let html = fs.readFileSync(htmlFile, 'utf8');
-  html = rewriteHtml(html, target.slug);
+  html = ensureCspSource(html, 'style-src', "'self'");
+  html = ensureCspSource(html, 'script-src', "'self'");
+  html = versionOfficialAssets(html);
+  html = stampBuild(html);
   fs.writeFileSync(htmlFile, html);
 
+  const label = target.slug || 'hub';
   if (!html.includes(`data-ekodi-ui-classification="${target.ui}"`)) {
-    throw new Error(`${target.slug || 'hub'}: official ${target.ui} classification missing`);
+    throw new Error(`${label}: official ${target.ui} classification missing`);
   }
   if (!html.includes(`data-ekodi-build-sha="${buildSha}"`)) {
-    throw new Error(`${target.slug || 'hub'}: build SHA marker missing`);
+    throw new Error(`${label}: build SHA marker missing`);
   }
-  if (!html.includes(`${assetBase(target.slug)}/official-ui.css`)) {
-    throw new Error(`${target.slug || 'hub'}: official UI stylesheet is not pinned to the production asset origin`);
+  if (!html.includes('data-ekodi-asset-routing="same-origin"')) {
+    throw new Error(`${label}: same-origin asset routing marker missing`);
   }
-  if (!html.includes(`${assetBase(target.slug)}/official-ui.js`)) {
-    throw new Error(`${target.slug || 'hub'}: official UI runtime is not pinned to the production asset origin`);
+  if (!html.includes(`/official-ui.css?v=${buildSha}`) || !html.includes(`/official-ui.js?v=${buildSha}`)) {
+    throw new Error(`${label}: official UI assets are not versioned same-origin resources`);
   }
-  if (/href=["']\/(?:site|official-ui)\.css/.test(html) || /src=["']\/(?:shell-style|official-ui)\.js/.test(html)) {
-    throw new Error(`${target.slug || 'hub'}: root-relative generated UI assets remain and can break host rewrites`);
+  if (/https:\/\/jadam-maru\.pages\.dev\/marketing-ai[^"']*\/(?:site|official-ui|shell)\.(?:css|js)/i.test(html)) {
+    throw new Error(`${label}: obsolete jadam-maru.pages.dev asset route survived`);
   }
-  if (!html.includes(pagesOrigin)) throw new Error(`${target.slug || 'hub'}: Pages production origin missing from CSP/assets`);
 
   if (target.slug) {
-    if (!html.includes(`${assetBase(target.slug)}/site.css`)) throw new Error(`${target.slug}: tenant stylesheet production route missing`);
-    if (!html.includes(`${assetBase(target.slug)}/shell-style.js`)) throw new Error(`${target.slug}: shell bridge production route missing`);
-    rewriteShellBridge(path.join(target.dir, 'shell-style.js'), target.slug);
+    if (!/href=["']\/site\.css\?v=[^"']+["']/.test(html)) {
+      throw new Error(`${label}: tenant stylesheet is not same-origin/versioned`);
+    }
+    if (!/src=["']\/shell-style\.js\?v=[^"']+["']/.test(html)) {
+      throw new Error(`${label}: shell bridge is not same-origin/versioned`);
+    }
+    const shellBridgeFile = path.join(target.dir, 'shell-style.js');
+    const shellBridge = fs.readFileSync(shellBridgeFile, 'utf8');
+    if (!/\/shell\.css\?v=/.test(shellBridge)) {
+      throw new Error(`${label}: shell fallback stylesheet is not same-origin/versioned`);
+    }
   }
 }
 
-console.log(`✅ Marketing AI generated UI assets pinned to canonical Cloudflare Pages paths with build marker ${buildSha}.`);
+console.log(`✅ Marketing AI generated assets stay on each deployed Pages project/custom domain with same-origin routing and build marker ${buildSha}.`);
