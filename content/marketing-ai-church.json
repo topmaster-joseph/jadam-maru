@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "id": "church",
+  "name": "에코디교회",
+  "productName": "에코디 마케팅AI",
+  "workspaceUrl": "https://marketing.ekodi.kr/church/",
+  "publicSite": "https://church.ekodi.kr/",
+  "myEkodi": "https://my.ekodi.kr/",
+  "authSite": "marketing",
+  "workspaceKind": "organization",
+  "approvalRequired": true,
+  "externalAutoPublish": false,
+  "mission": "예배와 말씀, 공동체와 선교의 자료를 채널별 콘텐츠로 준비하고 책임자의 확인을 거쳐 안전하게 나눈다.",
+  "goals": ["말씀 확산", "예배·모임 안내", "새가족 연결", "선교·공동체 참여"],
+  "subservices": [
+    {"id":"content","name":"콘텐츠","description":"채널별 홍보문구·제목·설명·해시태그 초안"},
+    {"id":"video","name":"영상","description":"15초·30초·60초 쇼츠·릴스 기획안과 자막 구성"},
+    {"id":"campaigns","name":"캠페인","description":"예배·행사·선교 캠페인 묶음 기획"},
+    {"id":"channels","name":"채널","description":"YouTube·Instagram·Facebook·Blog 연결상태"},
+    {"id":"approvals","name":"승인","description":"초안 → 승인요청 → 책임자 승인 → 게시대기"},
+    {"id":"publishing","name":"퍼블리싱","description":"승인된 콘텐츠의 예약·게시 준비"},
+    {"id":"analytics","name":"성과","description":"조회·반응·문의·참여 결과 기록"}
+  ],
+  "channels": [
+    {"id":"youtube","name":"YouTube","status":"linked","publish":"approval_required","note":"공식 채널 링크 확인, 업로드 OAuth는 별도 승인 필요"},
+    {"id":"instagram","name":"Instagram","status":"not_connected","publish":"disabled","note":"Meta 공식 OAuth 연결 후 게시 활성화"},
+    {"id":"facebook","name":"Facebook","status":"not_connected","publish":"disabled","note":"Meta Page 권한 연결 후 게시 활성화"},
+    {"id":"blog","name":"Blog","status":"draft_only","publish":"manual","note":"채널별 완성 원고 생성 후 확인 게시"},
+    {"id":"ekodi-social","name":"EKODI Social","status":"linked","publish":"approval_required","note":"에코디 내부 소셜 흐름 연결"}
+  ],
+  "workflow": ["RESEARCH", "PREPARE", "APPROVE", "EXECUTE", "MEASURE", "LEARN"],
+  "privacy": {
+    "minorPhotosRequireReview": true,
+    "sensitivePersonalDataBlocked": true,
+    "copyrightCheckRequired": true,
+    "officialSourcePriority": true
+  }
+}
