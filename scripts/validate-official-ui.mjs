@@ -38,6 +38,9 @@ for (const target of targets) {
   if (/https:\/\/jadam-maru\.pages\.dev\/marketing-ai[^"']*\/(?:site|official-ui|shell)\.(?:css|js)/i.test(html)) {
     throw new Error(`${label}: obsolete cross-project asset route remains`);
   }
+  if (/Powered by\s+(?:EKODI|EKODIBIZ)/i.test(html) || /class=["'][^"']*\bpowered\b/i.test(html)) {
+    throw new Error(`${label}: legacy local footer duplicates the shared EKODI footer`);
+  }
   if (!runtime.includes(target.ai) || !runtime.includes(target.role)) {
     throw new Error(`${label}: AI role contract mismatch`);
   }

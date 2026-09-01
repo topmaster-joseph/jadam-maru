@@ -59,7 +59,6 @@ body:is(.ekodi-authenticated-user,.ekodi-authenticated-admin) :where(.pilot-tabl
 body:is(.ekodi-authenticated-user,.ekodi-authenticated-admin) :where(.pilot-table th,th){background:var(--ekodi-ui-surface-raised,#10263a)!important;color:var(--ekodi-ui-muted,#9fb1c3)!important}
 body:is(.ekodi-authenticated-user,.ekodi-authenticated-admin) :where(.pilot-table td,td){border-color:var(--ekodi-ui-border,#24425e)!important;color:var(--ekodi-ui-text,#f4f7fb)}
 body:is(.ekodi-authenticated-user,.ekodi-authenticated-admin) :where(a,button,input,select,textarea):focus-visible{outline:2px solid var(--ekodi-ui-accent,#8ec8ff)!important;outline-offset:2px}
-body:is(.ekodi-authenticated-user,.ekodi-authenticated-admin) .powered{color:var(--ekodi-ui-muted,#9fb1c3)}
 body:is(.ekodi-authenticated-user,.ekodi-authenticated-admin) .pilot-note{background:#10263a!important;color:#d9c17c!important;border:1px solid var(--ekodi-ui-border,#24425e)}
 body:is(.ekodi-authenticated-user,.ekodi-authenticated-admin) .tenant-hero-copy{background:var(--ekodi-ui-surface,#0b1d2e)!important}
 body:is(.ekodi-authenticated-user,.ekodi-authenticated-admin).tenant-jadam .jadam-ops-card,
