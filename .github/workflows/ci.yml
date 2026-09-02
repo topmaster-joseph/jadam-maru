@@ -84,6 +84,11 @@ jobs:
           # Anonymous landing is compact and never shows synthetic performance numbers.
           grep -Fq 'data-public-landing-cleanup' "$hub"
           grep -Fq 'data-attractive-public-landing' "$hub"
+          grep -Fq 'data-public-design-reset' "$hub"
+          grep -Fq 'transform:none!important' "$hub"
+          ! grep -Fq "const hasMemberSignal=()=>localStorage.getItem(KEY)==='1'||welcomed" scripts/patch-free-member-experience.mjs
+          ! grep -Fq "||localStorage.getItem(KEY)==='1'||welcomed" scripts/patch-member-session-layout.mjs
+          ! grep -Fq "ekodi-marketing-free-experience" scripts/patch-official-user-ui.mjs
           grep -Fq 'body:not(.member-session-mode) .product-preview{display:none!important}' "$hub"
           grep -Fq 'body:not(.member-session-mode) .hero.hero-v2{display:block' "$hub"
           grep -Fq 'body:not(.member-session-mode) .member-preview{max-width:820px' "$hub"

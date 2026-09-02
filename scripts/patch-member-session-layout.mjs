@@ -56,7 +56,7 @@ const workspaceLink=links.find(a=>['#memberPreview','#memberTrial','#freeTrial']
 const pricingLink=links.find(a=>a.getAttribute('href')==='#pricing');
 const url=new URL(location.href);
 const welcomed=url.searchParams.get('welcome')==='free';
-const hasMember=()=>document.body.classList.contains('free-member-mode')||document.body.classList.contains('paid-member-mode')||localStorage.getItem(KEY)==='1'||welcomed||/✓|이용중/.test(auth?.textContent||'');
+const hasMember=()=>document.body.classList.contains('free-member-mode')||document.body.classList.contains('paid-member-mode')||welcomed||/✓|이용중/.test(auth?.textContent||'');
 const setBodyClass=(name,enabled)=>{const next=Boolean(enabled);if(document.body.classList.contains(name)===next)return false;document.body.classList.toggle(name,next);return true};
 let renderQueued=false;
 function render(){
