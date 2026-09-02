@@ -115,9 +115,7 @@ const auth=document.querySelector('#googleCustomerAuth');
 let scheduled=false;
 function member(){
   const body=document.body;
-  let local=false;
-  try{local=localStorage.getItem('ekodi-marketing-free-experience')==='1';}catch{}
-  return !!(body&&(body.classList.contains('member-session-mode')||body.classList.contains('free-member-mode')||body.classList.contains('paid-member-mode')||local||/✓|이용중/.test(auth?.textContent||'')));
+  return !!(body&&(body.classList.contains('member-session-mode')||body.classList.contains('free-member-mode')||body.classList.contains('paid-member-mode')||/✓|이용중/.test(auth?.textContent||'')));
 }
 function ensureWorkspaceStyle(){
   if(document.querySelector('link[data-ekodi-workspace-style]'))return;

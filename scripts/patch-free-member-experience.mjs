@@ -41,7 +41,7 @@ const headerFree=document.querySelector('.header-link[href="#memberPreview"]');
 const dashboardPreview=document.querySelector('.product-preview');
 const welcomed=url.searchParams.get('welcome')==='free';
 if(welcomed)localStorage.setItem(KEY,'1');
-const hasMemberSignal=()=>localStorage.getItem(KEY)==='1'||welcomed||/✓|이용중/.test(auth?.textContent||'');
+const hasMemberSignal=()=>welcomed||/✓|이용중/.test(auth?.textContent||'');
 const hasPaidPlan=()=>/(AUTO|PRO|PLUS|FLEX)/.test((auth?.textContent||'').toUpperCase());
 const setBodyClass=(name,enabled)=>{const next=Boolean(enabled);if(document.body.classList.contains(name)===next)return false;document.body.classList.toggle(name,next);return true};
 let renderQueued=false;
