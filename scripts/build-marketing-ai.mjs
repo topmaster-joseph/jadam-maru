@@ -60,4 +60,19 @@ fs.mkdirSync(qaDir, {recursive:true});
 const qa = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><title>${esc(config.productName)} 검수센터</title><style>${css}</style></head><body><div class="shell"><header class="top"><div class="product">${esc(config.productName)} 검수센터</div><span class="badge">QA ONLY</span></header><main><section class="hero"><div class="eyebrow">MARKETING AI QA</div><h1>배포 전에<br>직접 확인합니다.</h1><p>각 점포를 새창으로 열어 브랜드명, 매장정보, 확인된 메뉴, 모바일 화면과 링크 동작을 검수합니다.</p></section><section class="case-list">${qaCards}</section><p class="qa-note">이 페이지는 검색엔진에 노출하지 않습니다. 공개 승인 전까지 마케팅AI 메인 화면의 점포 링크는 비활성 상태를 유지합니다.</p></main></div></body></html>`;
 fs.writeFileSync(path.join(qaDir, 'index.html'), qa);
 
-console.log(`✅ Marketing AI 적용사례 ${config.cases?.length || 0}개 생성 완료`);
+const adminEntrypoints = [
+  { dir: out, source: 'marketing.ekodi.kr' },
+  { dir: path.join(out, 'jadam'), source: 'jadam.ai.ekodi.kr' },
+  { dir: path.join(out, 'pizzamaru'), source: 'pizzamaru.ai.ekodi.kr' },
+  { dir: path.join(out, 'yogurtpurple'), source: 'yogurt.ai.ekodi.kr' },
+];
+for (const entry of adminEntrypoints) {
+  const target = `https://admin.ekodi.kr/?route=marketing-ai&source=${encodeURIComponent(entry.source)}`;
+  const redirects = `/admin ${target} 302\n/admin/ ${target} 302\n`;
+  fs.writeFileSync(path.join(entry.dir, '_redirects'), redirects, 'utf8');
+  if (!fs.readFileSync(path.join(entry.dir, '_redirects'), 'utf8').includes('/admin ')) {
+    throw new Error(`Marketing AI admin route missing: ${entry.source}`);
+  }
+}
+
+console.log(`✅ Marketing AI 적용사례 ${config.cases?.length || 0}개 생성 완료 · 관리자 진입점 ${adminEntrypoints.length}개 보장`);
