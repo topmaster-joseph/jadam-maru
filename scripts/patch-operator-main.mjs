@@ -56,7 +56,6 @@ const brandMeta = {
 const cards = stores.map((store, index) => {
   const meta = brandMeta[store.slug];
   if (!meta) throw new Error(`Missing gateway brand metadata: ${store.slug}`);
-  const orderHref = `${store.publicSite.replace(/\/?$/, '/')}#order`;
   return `<article class="gate-card gate-${esc(store.slug)}" style="--accent:${meta.accent};--accent-dark:${meta.accentDark};--soft:${meta.soft};--brand-ink:${meta.ink}">
     <div class="gate-card-top">
       <div><small>${esc(meta.kicker)}</small><h2>${esc(meta.short)}</h2></div>
@@ -72,7 +71,7 @@ const cards = stores.map((store, index) => {
       <a class="gate-enter" href="${esc(store.publicSite)}" aria-label="${esc(store.name)} 매장 페이지로 이동">매장 입장 <span>→</span></a>
       <div>
         <a href="${esc(store.publicSite)}">매장 정보</a>
-        <a href="${esc(orderHref)}">주문 · 배달</a>
+        <a href="${esc(store.publicSite)}">주문 · 배달</a>
       </div>
     </div>
   </article>`;
