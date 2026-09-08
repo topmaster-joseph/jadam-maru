@@ -17,7 +17,7 @@
       "category": "치킨",
       "emoji": "🍗",
       "summary": "치킨 주문·포장·배달을 중심으로 운영하는 독립 매장입니다.",
-      "publicSite": "https://jadam.ekodi.kr/",
+      "publicSite": "https://ekodi.kr/jadam",
       "marketingAi": "https://jadam.ai.ekodi.kr/"
     },
     {
@@ -27,7 +27,7 @@
       "category": "피자",
       "emoji": "🍕",
       "summary": "피자와 사이드 조합을 중심으로 운영하는 독립 매장입니다.",
-      "publicSite": "https://pizzamaru.ekodi.kr/",
+      "publicSite": "https://ekodi.kr/pizzamaru",
       "marketingAi": "https://pizzamaru.ai.ekodi.kr/"
     },
     {
@@ -37,7 +37,7 @@
       "category": "요거트·디저트",
       "emoji": "🍨",
       "summary": "요거트와 디저트 메뉴를 중심으로 운영하는 독립 매장입니다.",
-      "publicSite": "https://yogurt.ekodi.kr/",
+      "publicSite": "https://ekodi.kr/yogurt",
       "marketingAi": "https://yogurt.ai.ekodi.kr/"
     }
   ]
