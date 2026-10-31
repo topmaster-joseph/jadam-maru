@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const root=process.cwd();
 const hubFile=path.join(root,'dist','marketing-ai','index.html');
-const authHref='https://auth.ekodi.kr/?site=marketing&return_to=https%3A%2F%2Fmarketing.ekodi.kr%2F';
+const authHref='https://ekodi.kr/auth/?site=marketing&return_to=https%3A%2F%2Fmarketing.ekodi.kr%2F';
 
 if(!fs.existsSync(hubFile))throw new Error('Marketing AI hub must exist before free-member experience patch');
 

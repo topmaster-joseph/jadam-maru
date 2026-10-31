@@ -14,7 +14,7 @@ const entry = `
     <p>이 주소에서는 자담치킨 AI의 내부 업무화면을 공개하지 않습니다. 사전 승인된 관계자만 전용 AI 운영실로 이동할 수 있습니다.</p>
     <div class="jadam-entry-rule"><b>일반 방문자</b><span>내부 데이터·계획·성과 화면 비공개</span></div>
     <div class="jadam-entry-rule"><b>승인 관계자</b><span>Google 계정 + 자담치킨 고객권한 확인 후 입장</span></div>
-    <a id="jadamEntryLogin" href="https://auth.ekodi.kr/?site=jadam-client">승인 계정으로 전용 AI 운영실 들어가기</a>
+    <a id="jadamEntryLogin" href="https://ekodi.kr/auth/?site=jadam-client">승인 계정으로 전용 AI 운영실 들어가기</a>
     <span class="jadam-entry-canonical">전용 운영실 · jadam.ai.ekodi.kr</span>
   </div>
 </section>`;
@@ -36,7 +36,7 @@ const runtime = `
 <script data-jadam-domain-entry-runtime>(()=>{
   if(!document.documentElement.classList.contains('jadam-entry-host'))return;
   const link=document.querySelector('#jadamEntryLogin'); if(!link)return;
-  const auth=new URL('https://auth.ekodi.kr/');
+  const auth=new URL('https://ekodi.kr/auth/');
   auth.searchParams.set('site','jadam-client');
   auth.searchParams.set('return_to','https://jadam.ai.ekodi.kr/');
   link.href=auth.href;

@@ -6,7 +6,7 @@ const cfg = JSON.parse(fs.readFileSync(path.join(root, 'content', 'marketing-ai-
 const outDir = path.join(root, 'dist', 'marketing-ai', 'church');
 fs.mkdirSync(outDir, { recursive: true });
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const auth = `https://auth.ekodi.kr/?site=${encodeURIComponent(cfg.authSite)}&return_to=${encodeURIComponent(cfg.workspaceUrl)}`;
+const auth = `https://ekodi.kr/auth/?site=${encodeURIComponent(cfg.authSite)}&return_to=${encodeURIComponent(cfg.workspaceUrl)}`;
 const tabs = cfg.subservices.map((item, index) => `<button type="button" class="tab${index === 0 ? ' active' : ''}" data-tab="${esc(item.id)}">${esc(item.name)}</button>`).join('');
 const channelRows = cfg.channels.map(row => `<article class="channel"><div><strong>${esc(row.name)}</strong><small>${esc(row.note)}</small></div><span class="status status-${esc(row.status)}">${esc(row.status)}</span></article>`).join('');
 const workflow = cfg.workflow.map((item, index) => `<div class="flow-step"><b>${index + 1}</b><span>${esc(item)}</span></div>`).join('');
@@ -26,7 +26,7 @@ const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta n
 fs.writeFileSync(path.join(outDir, 'index.html'), html, 'utf8');
 fs.copyFileSync(path.join(root, 'assets', 'church-marketing-ai.js'), path.join(outDir, 'app.js'));
 const built = fs.readFileSync(path.join(outDir, 'index.html'), 'utf8');
-for (const marker of ['data-ekodi-church-marketing-ai','에코디교회','홍보세트 만들기','쇼츠·릴스 영상 기획','승인 대기','외부 자동게시 OFF','Provider: Basic fallback','https://auth.ekodi.kr/?site=marketing']) {
+for (const marker of ['data-ekodi-church-marketing-ai','에코디교회','홍보세트 만들기','쇼츠·릴스 영상 기획','승인 대기','외부 자동게시 OFF','Provider: Basic fallback','https://ekodi.kr/auth/?site=marketing']) {
   if (!built.includes(marker)) throw new Error(`EKODI Church Marketing AI marker missing: ${marker}`);
 }
 for (const forbidden of ['자담치킨 목포대점','피자마루 목포대점','요거트퍼플 목포대점','061-453-8295']) {

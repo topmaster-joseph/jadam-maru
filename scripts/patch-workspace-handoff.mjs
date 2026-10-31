@@ -49,7 +49,7 @@ const dynamicAiOrigin=()=>location.protocol==='https:'&&/^[a-z0-9-]+\\.ai\\.ekod
 const auth=document.querySelector('#googleCustomerAuth');
 if(auth){
   const returnTo=(ALLOWED.has(location.origin)||dynamicAiOrigin())?location.origin+location.pathname:'https://marketing.ekodi.kr/';
-  auth.href='https://auth.ekodi.kr/?site=marketing&return_to='+encodeURIComponent(returnTo);
+  auth.href='https://ekodi.kr/auth/?site=marketing&return_to='+encodeURIComponent(returnTo);
 }
 window.EKODI_MARKETING_AUTH_PENDING=true;
 async function consumeSecureHandoff(){
