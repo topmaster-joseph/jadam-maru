@@ -27,7 +27,7 @@ jobs:
             file="dist/marketing-ai/$dir/index.html"
             test -f "$file"
             grep -Fq 'id="googleCustomerAuth"' "$file"
-            grep -Fq 'https://auth.ekodi.kr/?site=marketing' "$file"
+            grep -Fq 'https://ekodi.kr/auth/?site=marketing' "$file"
             grep -Fq 'Google로 무료 시작' "$file"
             grep -Fq 'Content-Security-Policy' "$file"
             grep -Fq "hash.get('ekodi_token')" "$file"

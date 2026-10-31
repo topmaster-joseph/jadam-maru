@@ -31,7 +31,7 @@ function funnelStyle() {
 }
 
 function trialExperienceMarkup() {
-  return `<section class="trial-lab" id="freeTrial"><div class="trial-lab-head"><div><small>NO LOGIN · BASIC TRIAL</small><h2>30초 마케팅 문구 무료체험</h2><p>상호와 오늘 홍보할 내용을 넣으면 SNS 문구·해시태그·쇼츠 훅 샘플을 바로 만듭니다.</p></div><span class="trial-free-badge">로그인 없이 이용</span></div><form class="trial-form" id="freeTrialForm"><label>상호·매장명<input id="trialStore" maxlength="40" required placeholder="예: 에코디카페"></label><label>오늘 홍보할 내용<input id="trialFocus" maxlength="60" required placeholder="예: 시원한 아이스라떼"></label><label>톤<select id="trialTone"><option value="warm">친근하게</option><option value="clean">깔끔하게</option><option value="energetic">활기차게</option></select></label><button type="submit">무료 샘플 만들기</button></form><div class="trial-results" id="trialResults" hidden><article class="trial-result"><small>SNS CAPTION</small><p id="trialCaption"></p></article><article class="trial-result"><small>HASHTAGS</small><p id="trialTags"></p></article><article class="trial-result"><small>SHORTS HOOK</small><p id="trialHook"></p></article></div><p class="trial-disclosure">이 체험은 비용 없이 동작하는 기본 샘플 엔진입니다. 실제 AI 자동생성·저장·채널연동·분석은 Google 무료회원 및 승인된 Pro 기능에서 단계적으로 제공합니다.</p></section><section class="trial-strip"><div><small>FREE → PRO</small><strong>기본 기능은 먼저 무료로 써보세요.</strong><p>Google 무료회원으로 계속 이용하고, 자동화·채널연동·분석이 필요해지면 Marketing AI Pro 사용을 신청할 수 있습니다.</p></div><a href="https://auth.ekodi.kr/?site=marketing&return_to=https%3A%2F%2Fmarketing.ekodi.kr%2F">무료회원 / Pro 사용신청</a></section>`;
+  return `<section class="trial-lab" id="freeTrial"><div class="trial-lab-head"><div><small>NO LOGIN · BASIC TRIAL</small><h2>30초 마케팅 문구 무료체험</h2><p>상호와 오늘 홍보할 내용을 넣으면 SNS 문구·해시태그·쇼츠 훅 샘플을 바로 만듭니다.</p></div><span class="trial-free-badge">로그인 없이 이용</span></div><form class="trial-form" id="freeTrialForm"><label>상호·매장명<input id="trialStore" maxlength="40" required placeholder="예: 에코디카페"></label><label>오늘 홍보할 내용<input id="trialFocus" maxlength="60" required placeholder="예: 시원한 아이스라떼"></label><label>톤<select id="trialTone"><option value="warm">친근하게</option><option value="clean">깔끔하게</option><option value="energetic">활기차게</option></select></label><button type="submit">무료 샘플 만들기</button></form><div class="trial-results" id="trialResults" hidden><article class="trial-result"><small>SNS CAPTION</small><p id="trialCaption"></p></article><article class="trial-result"><small>HASHTAGS</small><p id="trialTags"></p></article><article class="trial-result"><small>SHORTS HOOK</small><p id="trialHook"></p></article></div><p class="trial-disclosure">이 체험은 비용 없이 동작하는 기본 샘플 엔진입니다. 실제 AI 자동생성·저장·채널연동·분석은 Google 무료회원 및 승인된 Pro 기능에서 단계적으로 제공합니다.</p></section><section class="trial-strip"><div><small>FREE → PRO</small><strong>기본 기능은 먼저 무료로 써보세요.</strong><p>Google 무료회원으로 계속 이용하고, 자동화·채널연동·분석이 필요해지면 Marketing AI Pro 사용을 신청할 수 있습니다.</p></div><a href="https://ekodi.kr/auth/?site=marketing&return_to=https%3A%2F%2Fmarketing.ekodi.kr%2F">무료회원 / Pro 사용신청</a></section>`;
 }
 
 function trialExperienceScript() {
@@ -39,7 +39,7 @@ function trialExperienceScript() {
 }
 
 function centralAuthBootstrap() {
-  return `<script type="module">import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';const sb=createClient(${JSON.stringify(supabaseUrl)},${JSON.stringify(publishableKey)},{auth:{detectSessionInUrl:true,persistSession:true}});const ACCESS=${JSON.stringify(accessApi)};const hash=new URLSearchParams(location.hash.replace(/^#/,''));const tokenHash=hash.get('ekodi_token');if(tokenHash){history.replaceState({},document.title,location.pathname+location.search);try{const{error}=await sb.auth.verifyOtp({token_hash:tokenHash,type:'email'});if(error)throw error}catch(e){console.error('EKODI central handoff',e)}}const a=document.querySelector('#googleCustomerAuth');if(a){const allowed=new Set(${JSON.stringify(allowedReturnOrigins)});const returnTo=allowed.has(location.origin)?location.origin+location.pathname:'https://marketing.ekodi.kr/';a.href='https://auth.ekodi.kr/?site=marketing&return_to='+encodeURIComponent(returnTo);const{data:{session}}=await sb.auth.getSession();if(session){a.textContent='무료회원 ✓';a.title=session.user.email||'EKODI 무료회원';try{const r=await fetch(ACCESS+'/me?site=marketing',{headers:{apikey:${JSON.stringify(publishableKey)},Authorization:'Bearer '+session.access_token},cache:'no-store'});if(r.ok){const d=await r.json();if(d.status==='active'||d.status==='pre_registered'){a.textContent=(String(d.plan||'pro').toUpperCase())+' 이용중 ✓';a.title=(session.user.email||'EKODI 회원')+' · '+String(d.plan||'pro').toUpperCase()}}}catch{}}}</script>`;
+  return `<script type="module">import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';const sb=createClient(${JSON.stringify(supabaseUrl)},${JSON.stringify(publishableKey)},{auth:{detectSessionInUrl:true,persistSession:true}});const ACCESS=${JSON.stringify(accessApi)};const hash=new URLSearchParams(location.hash.replace(/^#/,''));const tokenHash=hash.get('ekodi_token');if(tokenHash){history.replaceState({},document.title,location.pathname+location.search);try{const{error}=await sb.auth.verifyOtp({token_hash:tokenHash,type:'email'});if(error)throw error}catch(e){console.error('EKODI central handoff',e)}}const a=document.querySelector('#googleCustomerAuth');if(a){const allowed=new Set(${JSON.stringify(allowedReturnOrigins)});const returnTo=allowed.has(location.origin)?location.origin+location.pathname:'https://marketing.ekodi.kr/';a.href='https://ekodi.kr/auth/?site=marketing&return_to='+encodeURIComponent(returnTo);const{data:{session}}=await sb.auth.getSession();if(session){a.textContent='무료회원 ✓';a.title=session.user.email||'EKODI 무료회원';try{const r=await fetch(ACCESS+'/me?site=marketing',{headers:{apikey:${JSON.stringify(publishableKey)},Authorization:'Bearer '+session.access_token},cache:'no-store'});if(r.ok){const d=await r.json();if(d.status==='active'||d.status==='pre_registered'){a.textContent=(String(d.plan||'pro').toUpperCase())+' 이용중 ✓';a.title=(session.user.email||'EKODI 회원')+' · '+String(d.plan||'pro').toUpperCase()}}}catch{}}}</script>`;
 }
 
 let casePages = 0;
@@ -63,7 +63,7 @@ for (const file of htmlFiles(out)) {
   if (html.includes('id="customerAuthOpen"')) {
     html = html.replace(
       '<button class="auth-open" id="customerAuthOpen" type="button">고객 로그인</button>',
-      '<a class="auth-open" id="googleCustomerAuth" href="https://auth.ekodi.kr/?site=marketing">Google로 무료 시작</a>',
+      '<a class="auth-open" id="googleCustomerAuth" href="https://ekodi.kr/auth/?site=marketing">Google로 무료 시작</a>',
     );
     casePages += 1;
   }
@@ -71,11 +71,11 @@ for (const file of htmlFiles(out)) {
   if (file === path.join(out, 'index.html')) {
     html = html.replace(
       '<span class="badge">APPLICATION CASES</span>',
-      '<div class="top-actions"><span class="badge">FREE TRIAL · APPLICATION CASES</span><a class="auth-open" id="googleCustomerAuth" href="https://auth.ekodi.kr/?site=marketing&return_to=https%3A%2F%2Fmarketing.ekodi.kr%2F">Google로 무료 시작</a></div>',
+      '<div class="top-actions"><span class="badge">FREE TRIAL · APPLICATION CASES</span><a class="auth-open" id="googleCustomerAuth" href="https://ekodi.kr/auth/?site=marketing&return_to=https%3A%2F%2Fmarketing.ekodi.kr%2F">Google로 무료 시작</a></div>',
     );
     if (!html.includes('id="freeTrialForm"')) html = html.replace('</main>', `${trialExperienceMarkup()}</main>`);
     if (!html.includes('Marketing AI basic trial engine')) html = html.replace('</body>', `<!-- Marketing AI basic trial engine -->${trialExperienceScript()}</body>`);
-    indexPatched = html.includes('auth.ekodi.kr/?site=marketing') && html.includes('FREE → PRO') && html.includes('id="freeTrialForm"');
+    indexPatched = html.includes('ekodi.kr/auth/?site=marketing') && html.includes('FREE → PRO') && html.includes('id="freeTrialForm"');
   }
 
   if (html.includes('id="googleCustomerAuth"') && !html.includes('EKODI central handoff')) {

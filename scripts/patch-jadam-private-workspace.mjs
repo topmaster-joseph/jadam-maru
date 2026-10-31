@@ -122,7 +122,7 @@ const gate = `
     <h1>자담치킨 목포대점<br>전용 AI 운영실</h1>
     <p>일반 공개 서비스가 아닙니다. 에코디에 사전 승인된 자담치킨 관계자·운영계정만 이 점포의 AI 업무공간에 들어갈 수 있습니다.</p>
     <div class="jadam-gate-status" id="jadamGateStatus"><b></b><span>승인 계정 확인 대기</span></div>
-    <a id="jadamGateLogin" href="https://auth.ekodi.kr/?site=jadam-client">승인된 Google 계정으로 로그인</a>
+    <a id="jadamGateLogin" href="https://ekodi.kr/auth/?site=jadam-client">승인된 Google 계정으로 로그인</a>
     <span class="jadam-gate-note">Google 로그인만으로는 열리지 않습니다. 자담치킨 고객권한 확인까지 완료되어야 합니다.</span>
   </div>
 </section>`;
@@ -145,7 +145,7 @@ const runtime = `
   const status=qs('#jadamGateStatus');
   const login=qs('#jadamGateLogin');
   const returnTo=new URL(location.href); returnTo.hash='';
-  const authUrl=new URL('https://auth.ekodi.kr/'); authUrl.searchParams.set('site','jadam-client'); authUrl.searchParams.set('return_to',returnTo.href); if(login) login.href=authUrl.href;
+  const authUrl=new URL('https://ekodi.kr/auth/'); authUrl.searchParams.set('site','jadam-client'); authUrl.searchParams.set('return_to',returnTo.href); if(login) login.href=authUrl.href;
   const say=(text,kind='')=>{if(!status)return; status.className='jadam-gate-status'+(kind?' '+kind:''); const span=status.querySelector('span'); if(span)span.textContent=text;};
   const token=()=>sessionStorage.getItem('ekodi-customer-token')||'';
   const tenant=()=>sessionStorage.getItem('ekodi-customer-tenant')||'';

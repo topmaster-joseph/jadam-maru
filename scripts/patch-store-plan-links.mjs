@@ -13,7 +13,7 @@ function htmlFiles(dir){
   });
 }
 
-const runtime=`<script data-store-plan-links>(()=>{const apply=ctx=>{const store=String(ctx?.storeId||'');if(!store)return;for(const link of document.querySelectorAll('a.pricing-cta[href*="auth.ekodi.kr"]')){try{const url=new URL(link.href);url.searchParams.set('site','marketing');url.searchParams.set('store',store);url.searchParams.set('return_to',location.href.split('#')[0]);link.href=url.href;link.dataset.storePlan=store}catch{}}};if(window.EKODI_MARKETING_CONTEXT)apply(window.EKODI_MARKETING_CONTEXT);window.addEventListener('ekodi:workspace-ready',event=>apply(event.detail),{passive:true});})();</script>`;
+const runtime=`<script data-store-plan-links>(()=>{const apply=ctx=>{const store=String(ctx?.storeId||'');if(!store)return;for(const link of document.querySelectorAll('a.pricing-cta[href*="ekodi.kr/auth/"]')){try{const url=new URL(link.href);url.searchParams.set('site','marketing');url.searchParams.set('store',store);url.searchParams.set('return_to',location.href.split('#')[0]);link.href=url.href;link.dataset.storePlan=store}catch{}}};if(window.EKODI_MARKETING_CONTEXT)apply(window.EKODI_MARKETING_CONTEXT);window.addEventListener('ekodi:workspace-ready',event=>apply(event.detail),{passive:true});})();</script>`;
 
 let patched=0;
 for(const file of htmlFiles(out)){

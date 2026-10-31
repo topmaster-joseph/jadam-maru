@@ -6,7 +6,7 @@ const hubFile = path.join(root, 'dist', 'marketing-ai', 'index.html');
 const pricing = JSON.parse(fs.readFileSync(path.join(root, 'content', 'marketing-ai-pricing.json'), 'utf8'));
 const esc = (value = '') => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 const won = value => `${Number(value).toLocaleString('ko-KR')}원`;
-const authHref = planId => `https://auth.ekodi.kr/?site=marketing&return_to=https%3A%2F%2Fmarketing.ekodi.kr%2F&plan=${encodeURIComponent(planId)}`;
+const authHref = planId => `https://ekodi.kr/auth/?site=marketing&return_to=https%3A%2F%2Fmarketing.ekodi.kr%2F&plan=${encodeURIComponent(planId)}`;
 
 if (!fs.existsSync(hubFile)) throw new Error('Marketing AI hub must be built before pricing patch');
 
