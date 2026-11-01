@@ -34,7 +34,7 @@ jobs:
             grep -Fq 'verifyOtp({token_hash:tokenHash' "$file"
             grep -Fq 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js' "$file"
             grep -Fq 'https://renzehysxirjilvdxacv.supabase.co' "$file"
-            grep -Fq 'https://marketing-api.ekodi.kr' "$file"
+            grep -Fq 'https://ekodi.kr/marketing-api' "$file"
             grep -Fq '/api/marketing/domains' "$file"
             grep -Fq 'id="customDomainPanel"' "$file"
             grep -Fq 'id="customDomainForm"' "$file"
@@ -61,7 +61,7 @@ jobs:
           grep -Fq 'Google로 무료 시작' "$hub"
           grep -Fq 'verifyOtp({token_hash:tokenHash' "$hub"
           grep -Fq 'id="customDomainPanel"' "$hub"
-          grep -Fq 'https://marketing-api.ekodi.kr' "$hub"
+          grep -Fq 'https://ekodi.kr/marketing-api' "$hub"
           grep -Fq '/api/marketing/domains' "$hub"
 
           # Public hub is audience-neutral, benefit-led and Google-login-first.

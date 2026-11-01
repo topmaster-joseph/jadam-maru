@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const root = process.cwd();
 const out = path.join(root, 'dist', 'marketing-ai');
-const apiOrigin = 'https://marketing-api.ekodi.kr';
+const apiOrigin = 'https://ekodi.kr/marketing-api';
 const legacyApiPath = '/api/marketing/domains';
 const storeApiPath = '/api/marketing/store-domains';
 const supabaseUrl = 'https://renzehysxirjilvdxacv.supabase.co';
@@ -52,7 +52,7 @@ for (const target of targets) {
   html = html.replace(/<style data-custom-domain-ui>[\s\S]*?<\/style>/g, '');
   html = html.replace(/<script type="module" data-custom-domain-ui>[\s\S]*?<\/script>/g, '');
   html = html.replace(/<section class="custom-domain-panel"[\s\S]*?<\/section><!-- custom-domain-panel:end -->/g, '');
-  html = html.replace(/connect-src([^;]*);/i, (all, hosts) => hosts.includes('marketing-api.ekodi.kr') ? all : `connect-src${hosts} https://marketing-api.ekodi.kr;`);
+  html = html.replace(/connect-src([^;]*);/i, (all, hosts) => /(^|\s)https:\/\/ekodi\.kr(\s|$)/.test(hosts) ? all : `connect-src${hosts} https://ekodi.kr;`);
   if (!html.includes('id="googleCustomerAuth"')) throw new Error(`Google member auth entry missing before custom domain patch: ${path.relative(root, target.file)}`);
   if (!html.includes('</main>')) throw new Error(`main close tag missing: ${path.relative(root, target.file)}`);
   html = html.replace('</head>', `${style}</head>`);

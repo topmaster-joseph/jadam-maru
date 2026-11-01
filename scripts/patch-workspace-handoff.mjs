@@ -6,7 +6,8 @@ const out = path.join(root, 'dist', 'marketing-ai');
 const supabaseUrl = 'https://renzehysxirjilvdxacv.supabase.co';
 const publishableKey = 'sb_publishable_0QjB0WzZbjrd-FJ5D5cR7A_xUkXyOY_';
 const accessApi = `${supabaseUrl}/functions/v1/access-api`;
-const marketingApi = 'https://marketing-api.ekodi.kr';
+const marketingApi = 'https://ekodi.kr/marketing-api';
+const marketingApiCspOrigin = 'https://ekodi.kr';
 const supabaseStorageKey = 'sb-renzehysxirjilvdxacv-auth-token';
 const allowedReturnOrigins = [
   'https://marketing.ekodi.kr',
@@ -186,7 +187,7 @@ for (const file of htmlFiles(out)) {
   });
   html = html.replace(/connect-src([^;]*);/i, (all, hosts) => {
     let next = hosts;
-    for (const host of [supabaseUrl, marketingApi]) if (!next.includes(host)) next += ` ${host}`;
+    for (const host of [supabaseUrl, marketingApiCspOrigin]) if (!new RegExp(`(^|\\s)${host.replace(/[.\/]/g, '\\$&')}(\\s|;|$)`).test(next)) next += ` ${host}`;
     return `connect-src${next};`;
   });
   fs.writeFileSync(file, html);
